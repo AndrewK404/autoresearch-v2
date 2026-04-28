@@ -12,11 +12,20 @@ reduces to one shell command printing one parseable scalar.
 
 ## Install & run
 
-Just copy it into Agent: 
+Start Claude Code with auto mode enabled:
+
+```bash
+claude --enable-auto-mode
 ```
-Install skill: <https://github.com/AndrewK404/autoresearch-v2.git>
-and then run autoresearch.
+
+Then inside Claude Code:
+
 ```
+/plugin marketplace add AndrewK404/autoresearch-v2
+/plugin install autoresearch-v2@autoresearch-v2
+```
+
+And tell it: `run autoresearch`.
 
 ## Architecture
 

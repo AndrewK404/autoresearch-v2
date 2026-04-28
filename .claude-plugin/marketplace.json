@@ -1,0 +1,15 @@
+{
+  "name": "autoresearch-v2",
+  "description": "Principles-first Claude Code skill for autonomous optimization.",
+  "owner": {
+    "name": "AndrewK404",
+    "url": "https://github.com/AndrewK404"
+  },
+  "plugins": [
+    {
+      "name": "autoresearch-v2",
+      "source": "./",
+      "description": "Turns the Claude Code main thread into an event-driven coordinator that iterates: hypothesize → edit → eval → keep/discard → learn → repeat, until you stop it. Works for any metric reducible to a single shell command printing one parseable scalar."
+    }
+  ]
+}
