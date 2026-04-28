@@ -12,10 +12,17 @@ reduces to one shell command printing one parseable scalar.
 
 ## Install & run
 
-Just copy it into Agent: 
+```bash
+git clone https://github.com/AndrewK404/autoresearch-v2 ~/.claude/skills/autoresearch-v2
 ```
-Install skill: <https://github.com/AndrewK404/autoresearch-v2.git>
-and then run autoresearch.
+
+Then in any project, tell Claude Code: `run autoresearch`.
+
+Or via the plugin marketplace:
+
+```
+/plugin marketplace add AndrewK404/autoresearch-v2
+/plugin install autoresearch-v2@autoresearch-v2
 ```
 
 ## Architecture
