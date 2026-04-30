@@ -9,22 +9,32 @@ A skill that turns the Claude Code main thread into an event-driven coordinator 
 
 ## 1. Core principles
 
-1. **Single target, single scalar.** Drift is impossible; keep/discard is just `<` or `>`.
-2. **Frozen contract.** `CONFIG.md`, `RESUME.md`, and the eval command are immutable after baseline. Changes require an explicit re-setup.
-3. **Experiments = ground truth, research = advisory.** Only ≥ 2 confirming keep experiments promote a claim into `LESSONS.md`.
+1. **Single target, single scalar** *(experiment mode)*. Drift is impossible; keep/discard is just `<` or `>`. In **research-only mode** (no executable experiment) there is no scalar — the loop is hypothesis → investigation → conclusion logged to `log/` (see §1a).
+2. **Frozen contract.** `CONFIG.md`, `RESUME.md`, and (in experiment mode) the eval command are immutable after baseline. Changes require an explicit re-setup.
+3. **Experiments = ground truth, research = advisory.** Only ≥ 2 confirming keep experiments promote a claim into `LESSONS.md`. *(In research-only mode, `LESSONS.md` is populated from the user's own confirmed conclusions instead — see §1a.)*
 4. **Async, event-driven.** Sub-agent returns arrive asynchronously. No cycle pairing, no fixed cadence.
-5. **Falsification over confirmation.** Every hypothesis carries a numeric falsifier. Experiments are designed to risk being wrong.
+5. **Falsification over confirmation.** Every hypothesis carries a numeric falsifier *(experiment mode)* or a clearly stated rejection condition *(research-only mode)*. Investigations are designed to risk being wrong.
 6. **Main never idle.** While sub-agents work, main keeps going: sharpening the next brief, pruning the Queue, compressing MEMORY, dispatching new work. Idle is acceptable only when capacity is full AND the Queue is empty.
 7. **Expensive resources never sit idle.** Experiments (especially GPU) must not wait while we do detailed analysis that could run in the background. Thinking to formulate a sharper hypothesis is fine; lengthy investigation is not.
 8. **Never gives up.** A plateau, an exhausted Queue, a streak of discards — these are signals to **escalate the strategy level** (see §5), not to stop. Stopping is allowed only on explicit conditions in `CONFIG.md ## Termination` or by user command. If every idea "obviously won't work", we move to the next level: systematic → structural → radical rethinking. The metric, scope, or problem framing may be wrong — but that conclusion is reached *through* experiments, not by refusing to run them.
 
+## 1a. Operating modes
+
+The **first question of the interview** (see `references/interview.md`) determines the mode:
+
+- **Experiment mode** *(default)* — research that involves a direct, executable experiment (a shell command that prints one scalar). The full loop applies: hypothesize → edit → eval → keep/discard → learn. All sections of this document apply as written.
+- **Research-only mode** — the work is investigative (literature surveys, analysis, comparison studies, design exploration) without an executable experiment. The Stage 0 baseline (exp/000) is **skipped**, the eval block in `CONFIG.md` is **omitted**, and the cycle becomes: hypothesize → investigate (research/analysis sub-agents, optional manual experimentation) → record thoughts and conclusions in `log/NNN-<type>-<info>.md`. The user — not an automated metric — decides whether a finding is solid; once they confirm, it can be promoted to `LESSONS.md`.
+
+Mode is recorded in `CONFIG.md ## Mode` and is part of the frozen contract. Switching modes requires a re-setup.
+
 ## 2. End-to-end flow
 
-**Stage 0 — Setup (one-time).** After the interview the project has an `autoresearch/` directory at the **project root** containing: `CONFIG.md`, `RESUME.md`, `MEMORY.md`, `LESSONS.md`, `log/`, `memory/`, `archive/`, `log.tsv`. A baseline (exp/000) has been run and the starting metric is fixed. The frozen contract becomes active.
+**Stage 0 — Setup (one-time).** After the interview the project has an `autoresearch/` directory at the **project root** containing: `CONFIG.md`, `RESUME.md`, `MEMORY.md`, `LESSONS.md`, `log/`, `memory/`, `archive/`, `log.tsv`. *In experiment mode* a baseline (exp/000) has been run and the starting metric is fixed. *In research-only mode* the baseline is skipped and the contract is activated as soon as the user confirms `CONFIG.md` and `RESUME.md`. Either way, the frozen contract becomes active at the end of Stage 0.
 
 **Stage 1 — Kick-off.**
 - The user states the task.
-- Form a hypothesis and launch an experiment in the background (`uv run ...` or similar).
+- *Experiment mode:* form a hypothesis and launch an experiment in the background (`uv run ...` or similar).
+- *Research-only mode:* form a hypothesis and dispatch the first investigation (research / analysis sub-agent, doc digest, profiler, etc.). No background eval command runs.
 
 **Stage 2 — Parallel work (THE CORE).** While the experiment runs:
 - identify topics where knowledge is thin;
@@ -35,10 +45,10 @@ A skill that turns the Claude Code main thread into an event-driven coordinator 
 
 1. think
 2. analyse the return carefully
-3. write `log/NNN-<type>-<info>.md` (e.g. `054-research-lr-scheduler.md`)
+3. write `log/NNN-<type>-<info>.md` (e.g. `054-research-lr-scheduler.md`) — in **research-only mode** this is also where the user's own thoughts and conclusions are saved (free-form `Thoughts` / `Conclusion` sections inside the same file)
 4. update the corresponding row in `log.tsv`
 5. update `MEMORY.md`
-6. if a lesson is now confirmed (≥ 2 keep) — update `LESSONS.md`
+6. *Experiment mode:* if a lesson is now confirmed (≥ 2 keep) — update `LESSONS.md`. *Research-only mode:* if the user has explicitly confirmed a conclusion as solid, promote it to `LESSONS.md` with references to the supporting `log/` entries.
 7. think
 8. decide the next direction and dispatch the next sub-agent (analysis / research / scripted task / whatever fits)
 
@@ -217,9 +227,9 @@ The minimum set is researcher + analyst. **The list below is examples, not exhau
 
 Details in `references/setup.md`.
 
-1. **Interview** — walk the user through `references/interview.md`. Important answers and envs → `RESUME.md`. Eval command + scope + constraints → `CONFIG.md`.
+1. **Interview** — a single consolidated `AskUserQuestion` block (see `references/interview.md`). The **first question** of that block decides the operating mode (experiment vs research-only). The user answers all questions in one turn and may attach additional data (env keys, framework configs, links) in a follow-up message if asked. Important answers and envs → `RESUME.md`. Mode + (optionally) eval command + scope + constraints → `CONFIG.md`.
 2. **Scaffold** — create the file tree, initialise empty `MEMORY.md`, `LESSONS.md`, `log.tsv` (header only), and empty `log/`, `memory/`, `archive/` directories.
-3. **Baseline** — required. Run exp/000 to fix the starting metric. Without a successful baseline the frozen contract is not active. Once baseline succeeds, `CONFIG.md`, `RESUME.md`, and the eval command become frozen.
+3. **Baseline** — required **only in experiment mode**. Run exp/000 to fix the starting metric; without a successful baseline the frozen contract is not active. *In research-only mode this stage is skipped*; the contract activates as soon as the user confirms `CONFIG.md` and `RESUME.md`.
 
 ### Cold start (read order at first setup)
 
@@ -228,9 +238,9 @@ SKILL.md
   → references/setup.md
   → references/interview.md
   → references/file-structure.md
-  → interview the user
+  → interview the user (single ask block; first question = mode)
   → scaffold
-  → baseline (exp/000)
+  → baseline (exp/000)        # experiment mode only
   → enter steady state
 ```
 
