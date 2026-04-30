@@ -7,16 +7,17 @@ before greedy adds them. Skeleton from the FunSearch paper
 
 ## 1. Achievements
 
-| n  | baseline `priority = 0` | autoresearch | published landmark |
-|----|------------------------:|-------------:|-------------------:|
-| 8  | 256                     | **512**      | 512 (FunSearch 2023) |
-| 9  | 512                     | **1082**     | 1082 (pre-FunSearch product) |
-| 10 | 1024                    | **2240**     | 2240 (Tait 2018, 112 × 20) |
-| 11 | 2048                    | **5040**     | 5040 (112 × 45) |
+| n  | baseline `priority = 0` | autoresearch | known landscape |
+|----|------------------------:|-------------:|-----------------|
+| 8  | 256                     | **512**      | 512 is the largest known cap (FunSearch 2023). Exact max unknown; upper bound 771 (Tait 2018). |
+| 9  | 512                     | **1082**     | 1082 is the largest known cap (Edel-style product, matched by FunSearch). Upper bound 2070. |
+| 10 | 1024                    | **2240**     | Matches the classical 112 × 20 product. The actual max is open: 2240 ≤ max ≤ 5619 (Tait 2018). |
+| 11 | 2048                    | **5040**     | 112 × 45 product. No widely-cited specific record — the Tyrrell asymptotic ≥ 2.218^11 ≈ 5800 suggests room. |
 
-All results pass the official `verify_cap_set`. n=8 and n=9 match
-the published records; n=10 and n=11 reach the largest tensor-product
-caps available given the proven-max factors.
+All results pass the official `verify_cap_set`. At n=8 and n=9 we match
+the published records. At n=10 and n=11 we reach the largest
+tensor-product caps you can build from the proven-max factors at lower
+n; whether non-tensor constructions exceed these is an open question.
 
 ### How
 

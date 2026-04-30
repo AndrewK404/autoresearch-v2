@@ -11,7 +11,7 @@ so the run is reproducible end-to-end.
 
 | Example | Domain | Headline result |
 |---|---|---|
-| [cap-set/](cap-set/) | extremal combinatorics — cap sets in F₃ⁿ | matched FunSearch's records at n=8 (512) and n=9 (1082); reached 2240 at n=10 (Tait 2018 lower bound) and 5040 at n=11 by combining FunSearch's published priorities with sectioning + Pellegrino's hyperplane-removal recipe |
+| [cap-set/](cap-set/) | extremal combinatorics — cap sets in F₃ⁿ | matched the published records at n=8 (**512**) and n=9 (**1082**); reached **2240** at n=10 (the classical 112 × 20 product) and **5040** at n=11 (112 × 45) by combining FunSearch's published priorities with sectioning + Pellegrino's hyperplane-removal recipe |
 
 ## Per-example layout
 
