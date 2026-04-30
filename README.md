@@ -107,6 +107,17 @@ autoresearch/
 - Metric gaming is possible — encode hard rules in `CONFIG.md ## Constraints`.
 
 
+## Examples
+
+[`examples/`](examples/) collects runs where `autoresearch` produced
+meaningful results. Each entry has the full `autoresearch/` working
+tree plus a `report.md` summarising what was achieved and the agent
+trace.
+
+| Example | Headline result |
+|---|---|
+| [cap-set/](examples/cap-set/) | F₃ⁿ cap-set construction: matched FunSearch's records at n=8 (**512**) and n=9 (**1082**); reached **2240** at n=10 and **5040** at n=11 by combining FunSearch's published priorities with sectioning + Pellegrino's hyperplane-removal recipe |
+
 ## Inspiration
 
 - [Andrej Karpathy's autoresearch](https://github.com/karpathy/autoresearch) —

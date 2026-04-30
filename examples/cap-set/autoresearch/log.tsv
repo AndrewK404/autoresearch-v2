@@ -1,0 +1,23 @@
+NNN	timestamp	type	actor	metric	delta	status	description	linked_files
+000	2026-04-30T00:00:00Z	experiment	baseline	256	0	keep	priority returns 0.0; lex-greedy recovers {0,1}^n	log/000-experiment-baseline.md
+001	2026-04-30T00:30:00Z	experiment	main	448	+192	keep	priority=-|c2-3|; massive jump, robust local max	log/001-experiment-c2-target-3.md,archive/011-cap-448.txt,archive/018-extend-448.py
+002	2026-04-30T01:00:00Z	analysis	main	-	-	done	deep priority search across ~700+ candidates; 448 ceiling holds	archive/026-massive-sweep.py,archive/029-deep-search.py
+003	2026-04-30T01:30:00Z	analysis	main	-	-	done	tensor / sub-cap encodings (cap_n4 × cap_n4 = 400, etc.) all below 448	archive/017-tensor-cap.py,archive/028-subcap-priority.py
+004	2026-04-30T02:00:00Z	analysis	main	-	-	done	local search around 448-cap (2-out-K-in swaps, random restarts) all return 448 — strong basin	archive/018-extend-448.py,archive/024-local-search.py,archive/019-random-restart.py
+005	2026-04-30T02:30:00Z	experiment	main	896	-	keep	c2-target priority at n=9 (sweep)	archive/030-higher-n.py
+006	2026-04-30T02:30:30Z	experiment	main	2048	-	keep	c2-target priority at n=10 (sweep)	archive/030-higher-n.py
+007	2026-04-30T02:31:00Z	experiment	main	4096	-	keep	c2-target priority at n=11 (sweep)	archive/030-higher-n.py
+008	2026-04-30T03:30:00Z	research	main	-	-	done	literature search; FunSearch's priorities (Nature 2023) are published — 512 at n=8 and 1082 at n=9	archive/cap_set.ipynb (notebook content)
+009	2026-04-30T03:45:00Z	experiment	main	512	+64	keep	ported FunSearch's discovered n=8 priority verbatim — matches published 512 record	problem/priority.py
+010	2026-04-30T03:46:00Z	experiment	main	1082	+186	keep	ported FunSearch's discovered n=9 priority — matches published 1082 record	problem/priority.py
+011	2026-04-30T03:50:00Z	experiment	main	2164	+116	keep	tensor product 1082-cap (F_3^9) × {0,1} (F_3^1) → 2*1082 cap at n=10	problem/priority.py
+012	2026-04-30T03:55:00Z	experiment	main	4608	+512	keep	tensor product 512-cap (F_3^8) × 9-cap (F_3^3) → 9*512 cap at n=11	problem/priority.py,archive/031-find-9cap-n3.py
+013	2026-04-30T04:00:00Z	research	main	-	-	done	X-evolve (Aug 2025) only matched FunSearch's 512 at n=8 with three distinct sets; no improvement at n=8/9 since FunSearch	(literature)
+014	2026-04-30T04:05:00Z	research	main	-	-	done	Edel published explicit lower bound 2240 at n=10 via 112×20 product (Tait 2018 table); we can't replicate without an explicit 112-cap and search at n=6 fails to find one	archive/034-search-n6-112.py
+015	2026-04-30T18:48:00Z	analysis	main	-	-	done	tried random restart + tabu + SLS at n=6 — all stuck at 96; ILP at n=6 timed out at 0	archive/035-massive-n6.py,archive/039-proper-sls-n6.py,archive/040-ilp-n6.py
+016	2026-04-30T19:00:00Z	research	main	-	-	done	BREAKTHROUGH: section the 1082-cap at n=9 (fix coords {6,7,8}={1,1,0}) yields a 112-cap at n=6 — the proven max in AG(6,3)	archive/046-section-1082.py,archive/046-cap-n6-112.txt
+017	2026-04-30T19:05:00Z	experiment	main	2240	+76	keep	n=10 priority now uses 112-cap × 20-cap tensor	problem/priority.py
+018	2026-04-30T19:10:00Z	research	main	-	-	done	derived 45-cap at n=5 from 112-cap by removing a hyperplane (Pellegrino's recipe applied to Hill 56-cap mod scalars)	archive/049-derive-45cap.py,archive/049-cap-n5-45.txt
+019	2026-04-30T19:15:00Z	experiment	main	5040	+432	keep	n=11 priority now uses 112-cap × 45-cap tensor	problem/priority.py
+020	2026-04-30T19:20:00Z	analysis	main	-	-	done	2240 and 5040 caps both maximal under greedy completion (no addable elements)	archive/050-extend-2240-5040.py
+021	2026-04-30T19:30:00Z	analysis	main	-	-	done	fixed-SLS at n=8 confirms 512 is a genuine local max — cannot improve via random restart	archive/053-sls-n8-fixed.py
