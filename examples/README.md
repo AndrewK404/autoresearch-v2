@@ -19,7 +19,10 @@ so the run is reproducible end-to-end.
 <example-name>/
 ├── autoresearch/      # skill working tree (CONFIG, MEMORY, LESSONS, log/, archive/, ...)
 ├── report.md          # what was achieved + brief trace summary
-├── problem/           # read-only scaffold and target file
-├── BACKGROUND.md      # read-only context handed to the skill
-└── PROMPT.md          # the original prompt that launched the run
+└── problem/           # the original scaffold:
+    ├── PROMPT.md      #   the prompt that launched the run
+    ├── BACKGROUND.md  #   read-only context handed to the skill
+    ├── priority.py    #   the target file (the one autoresearch evolves)
+    ├── solve.py       #   read-only skeleton
+    └── eval.py        #   read-only eval that prints the metric
 ```
