@@ -10,6 +10,12 @@ Works for ML training (`val_loss`, `val_bpb`), API performance (`p50_ms`),
 bundle size, prompt pass-rate, LLM-judged quality — for **any** metric that
 reduces to one shell command printing one parseable scalar.
 
+Also supports a **research-only mode** for investigations that don't have an
+executable experiment (literature surveys, framework comparisons, design
+exploration). The first interview question chooses the mode; in research-only
+mode the experiment steps are removed entirely and you save your own thoughts
+and conclusions in the per-action log files instead.
+
 ## Install & run
 
 Start Claude Code with auto mode enabled:

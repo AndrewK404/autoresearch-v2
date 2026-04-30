@@ -13,17 +13,30 @@ For each file: one or two sentences on its purpose + a sample layout. **Fields a
 ```markdown
 # CONFIG
 
+## Mode
+<experiment | research-only>
+(experiment: a single shell command prints one scalar; research-only: no
+executable eval — findings are recorded as thoughts/conclusions in log/)
+
 ## Goal
-<One sentence: what we are optimising and why.>
+<One sentence: what we are optimising or investigating, and why.>
 
 ## Metric
+(experiment mode only — omit this whole section in research-only mode)
 - Name: <metric_name>
 - Direction: <minimize | maximize>
 - Noise threshold: <value below which a change is treated as noise; `None` if
   the metric is exact — e.g. val_loss in ML training, exit_code, integer counts>
 - Notes: <any jitter / instability>
 
+## Done criterion
+(research-only mode only — omit in experiment mode)
+- Definition of done: <e.g. "a written recommendation comparing 3 frameworks">
+- User's confirmation criterion for promoting a finding to LESSONS.md:
+  <e.g. "I review the conclusion and explicitly say it's solid">
+
 ## Eval
+(experiment mode only — omit this whole section in research-only mode)
 - Command: `<single shell command>`
 - Timeout: <seconds>
 - Parse: <summary_block | regex:<...> | json_path:<...> | file:<path> | exit_code>
@@ -39,6 +52,8 @@ For each file: one or two sentences on its purpose + a sample layout. **Fields a
 - Forbidden: <files/areas never to touch>
 
 ## Constraints
+(experiment mode only — anti-gaming rules; in research-only mode this section
+is typically empty or holds general scope rules)
 - <Constraint 1: e.g. "do not remove asserts in tests/">
 - <Constraint 2>
 - <...>
@@ -48,8 +63,8 @@ For each file: one or two sentences on its purpose + a sample layout. **Fields a
 - <Other integrations as needed; "not used" entries are intentional, not omissions>
 
 ## Concurrency
-- Experiments in parallel: <N>
-- Sub-agents in parallel: <M> (default 3)
+- Experiments in parallel: <N>  (experiment mode only; default 1; n/a in research-only)
+- Sub-agents in parallel: <M>  (default 3 in experiment mode, 4 in research-only mode)
 
 ## Termination
 - <max experiments | plateau window | target threshold | unlimited>
@@ -155,7 +170,10 @@ When the file approaches 400 lines:
 
 ## LESSONS.md
 
-**Role:** confirmed lessons grounded in **own experience**. Writes are allowed only after **≥ 2 keep experiments confirm the same falsifier statement** (i.e. the same falsifier from `MEMORY.md ## Queue` is satisfied twice — not just two keeps that loosely point in the same direction). Research-only insights do not go here (their place is `log/NNN-research-<info>.md`).
+**Role:** confirmed lessons grounded in **own experience**.
+
+- *Experiment mode:* writes are allowed only after **≥ 2 keep experiments confirm the same falsifier statement** (i.e. the same falsifier from `MEMORY.md ## Queue` is satisfied twice — not just two keeps that loosely point in the same direction). Sub-agent research insights alone do not qualify (their place is `log/NNN-research-<info>.md`).
+- *Research-only mode:* a finding is promoted here once **the user explicitly confirms it as solid** (per `CONFIG.md ## Done criterion`). The lesson must still cite the supporting `log/NNN-*.md` entries that contain the underlying thoughts and conclusions.
 
 **Format — free-form.** Each lesson is written however lands naturally: a single sentence, a paragraph, a paragraph with a quoted experiment, a small list of caveats. There is no rigid schema. What must come through: **what** is claimed, **on what evidence** (at least two `exp NNN` references), and **in what context** it applies.
 
@@ -230,6 +248,15 @@ escalation, the next dispatch.>
 ```
 
 The sections are guidance. If an action has no diff (a research session) — skip `Done` or rephrase it. The one section that is **always** present is `Reasoning`.
+
+### Research-only mode — `Thoughts` and `Conclusion` sections
+
+In research-only mode there is no scalar metric to populate `Result`. Instead, two free-form sections are added:
+
+- **`## Thoughts`** — the user's own running notes during the investigation: hunches, half-formed ideas, observations from reading. Free-form prose, bullets, or quoted snippets — whatever fits.
+- **`## Conclusion`** — the user's distilled answer to the hypothesis from `What & why`. Marked as `tentative` (most cycles) or `confirmed` (when the user has stamped it per `CONFIG.md ## Done criterion`). Only `confirmed` conclusions are eligible for promotion to `LESSONS.md`.
+
+`Result` is set to `n/a (research-only)`. Everything else (`What & why`, `Done`, `Reasoning`, `Next`, `Linked`) keeps its meaning. A short example for research-only mode is appended to the Examples section below.
 
 ### Example: experiment
 
@@ -335,6 +362,58 @@ stability". One more confirming keep at 150 would qualify this for LESSONS.
 - archive/020-warmup-scatter.png
 ```
 
+### Example: research-only mode entry (with Thoughts and Conclusion)
+
+```markdown
+# res 014 — vector store comparison: pgvector vs Qdrant vs Weaviate
+
+## What & why
+Hypothesis: for our 5M-document corpus with hybrid filtering needs, pgvector
+is good enough and avoids adding a new system. Rejection condition (per
+CONFIG.md ## Done criterion): if pgvector falls short on filtered ANN latency
+at p95 by >2× compared to a dedicated store at the same recall, we drop it.
+
+## Done
+Read three benchmark posts (archive/014-pgvector-bench.md,
+archive/014-qdrant-bench.md, archive/014-weaviate-bench.md). Sketched a small
+table of operational properties (archive/014-ops-matrix.md). No code run.
+
+## Result
+n/a (research-only)
+
+## Thoughts
+- pgvector benchmarks all use HNSW now; the old IVFFlat numbers people quote
+  are misleading.
+- Filtering story is the real differentiator. Qdrant's filter-then-search
+  path stays sub-100ms even with selective filters; pgvector with HNSW drops
+  to brute-force on tight filters.
+- We almost always have a tight filter (tenant_id, doc_type). That's the
+  case where pgvector hurts.
+
+## Conclusion
+*Tentative.* For our specific filtering pattern (always-on tenant_id +
+frequent doc_type), pgvector is likely to be the slow path, not the
+"good enough" baseline I assumed. Qdrant looks like the right default; need
+to validate on our corpus before committing.
+
+## Reasoning
+Hypothesis is leaning toward rejection but not yet there — I haven't measured
+on our own corpus. Want to run a small filtered-ANN probe before promoting
+this to LESSONS.
+
+## Next
+- Queue: small filtered-ANN probe on a 100k-doc sample (one-off script,
+  still research-only — record numbers as Thoughts in the next log entry).
+- Once user confirms the conclusion stands after the probe → promote to
+  LESSONS.md.
+
+## Linked
+- archive/014-pgvector-bench.md
+- archive/014-qdrant-bench.md
+- archive/014-weaviate-bench.md
+- archive/014-ops-matrix.md
+```
+
 ### Example: compression
 
 ```markdown
@@ -416,8 +495,8 @@ NNN	timestamp	type	actor	metric	delta	status	description	linked_files
 | `timestamp` | ISO 8601 |
 | `type` | `experiment` \| `research` \| `analysis` \| `compression` \| `escalation` \| **any other** type main introduces (e.g., `critique`, `profile`, `reflection`) |
 | `actor` | `main` \| `experiment` \| `researcher` \| `baseline` \| **any other** briefed sub-agent role |
-| `metric` | metric value (for `experiment`) or `-` |
-| `delta` | signed delta vs best (for `experiment`) or `-` |
+| `metric` | metric value (for `experiment` in experiment mode) or `-` (always `-` in research-only mode) |
+| `delta` | signed delta vs best (for `experiment` in experiment mode) or `-` (always `-` in research-only mode) |
 | `status` | `running` (in flight) \| `keep` \| `discard` \| `crash` \| `done` (for non-experiments) |
 | `description` | one phrase |
 | `linked_files` | comma-separated paths in `log/` and `archive/`. **Never** include `MEMORY.md`, `LESSONS.md`, `CONFIG.md` |
