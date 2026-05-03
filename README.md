@@ -100,16 +100,21 @@ autoresearch/
 
 ## Examples
 
-See `examples/` for a worked run (research-only mode) on the generalized
-Collatz family. Outcome: a new structural theorem (Lyndon-word bijection
-for primitive cycles on the m=1 hypersurface), an infinite 2D family of
-"tractable cousins" of Collatz, and a publication-style report
-(`examples/report.md`).
+See `examples/` for worked autoresearch-v2 runs. Each task lives in
+its own subdirectory (`examples/<task-name>/`) containing the working
+tree (`autoresearch/`) and a publication-style `report.md`.
 
-The `examples/README.md` also contains lessons from the run — proposed
-changes to autoresearch and a unified evaluation metric covering both
-research and engineering tasks (LLM training, kernel optimization,
-prompt iteration).
+`examples/README.md` indexes the tasks and contains lessons from the
+runs — proposed changes to autoresearch and a unified evaluation metric
+covering both research and engineering tasks (LLM training, kernel
+optimization, prompt iteration).
+
+Current entries:
+
+- `examples/collatz-atlas/` — research-only run on generalized Collatz
+  dynamics. Headline result: a Lyndon-word bijection for primitive
+  cycles on the m=1 hypersurface and an infinite 2D family of
+  "tractable cousins" of Collatz with explicit cycle counts.
 
 ## Known limitations
 

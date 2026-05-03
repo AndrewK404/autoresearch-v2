@@ -19,7 +19,10 @@ The bar for success: a small number of falsifiable empirical claims, each
 with scope and evidence, plus the atlas in reusable form. *Even one new
 candidate "tractable cousin" of Collatz would be a real contribution.*
 
-Full brief: `TASK.md`.
+Constraints: laptop-scale, arbitrary-precision integers (Python), fixed
+seeds, single-command regeneration. Pre-registered prediction-vs-outcome
+record. Negative and null results count if the search was thorough enough
+to be informative.
 
 ## Main conclusion
 
