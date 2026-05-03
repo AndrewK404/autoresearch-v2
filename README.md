@@ -98,6 +98,19 @@ autoresearch/
    works in parallel — research, pruning, sharpening.
 8. **Never gives up.** Plateau is a signal to escalate, not to stop.
 
+## Examples
+
+See `examples/` for a worked run (research-only mode) on the generalized
+Collatz family. Outcome: a new structural theorem (Lyndon-word bijection
+for primitive cycles on the m=1 hypersurface), an infinite 2D family of
+"tractable cousins" of Collatz, and a publication-style report
+(`examples/report.md`).
+
+The `examples/README.md` also contains lessons from the run — proposed
+changes to autoresearch and a unified evaluation metric covering both
+research and engineering tasks (LLM training, kernel optimization,
+prompt iteration).
+
 ## Known limitations
 
 - Single-node by default; remote compute lives behind the eval command.
