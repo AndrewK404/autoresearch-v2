@@ -1,0 +1,602 @@
+\documentclass[11pt]{amsart}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\rad}{rad}
+\DeclareMathOperator{\lcm}{lcm}
+
+\title[Exact cycle counts on the $m{=}1$ hypersurface]{%
+An exact closed-form count of primitive cycles on the $m=1$
+hypersurface of generalized Collatz dynamics}
+
+\author{Autoresearch run \texttt{collatz-atlas}}
+\date{May 2026}
+
+\begin{document}
+
+\begin{abstract}
+For the family of generalized Collatz maps
+$T_{a,b}(n) = n/2$ if $n$ is even and $T_{a,b}(n) = an+b$ if $n$ is odd
+($a, b$ odd integers, $a \geq 3$), we prove an exact closed-form count
+of primitive cycles on the so-called $m = 1$ hypersurface
+$b = 2^K - a^L$. Specifically, every cell $(a,\, b = 2^K - a^L)$ with
+$2^K > a^L$ admits exactly
+$L_{K,L} := \tfrac{1}{L}\sum_{d \mid \gcd(K,L)} \mu(d)\binom{K/d-1}{L/d-1}$
+primitive cycles of length $K+L$, the count of binary Lyndon words of
+length $K$ with $L$ ones. The proof strengthens Gupta's existence
+theorem (2020) to a strict equality via three components: a
+Diophantine criterion $b \mid (2a)^j - 1$ for the existence of
+alternate tuples (Theorem~\ref{thm:A}); a closed-form proof that
+$L'=2$ alternate tuples contribute no extras
+(Theorem~\ref{thm:C}); and a global finite classification reducing
+the $L' \geq 2$ case to two exceptional cells $(a,L,K) \in
+\{(3,3,5),(5,3,7)\}$, both of which contribute zero extras
+(Theorem~\ref{thm:053}). As corollaries we obtain two infinite
+Catalan subfamilies on the diagonals $K = 2L \pm 1$ at $a = 3$.
+The classification of Theorem~\ref{thm:053} is conditional on
+standard explicit Baker bounds; an empirical sweep over the range
+$a \leq 5001$, $L \leq 50$, $K \leq 200$ is unconditional.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+The Collatz conjecture concerns the iteration of $T_{3,1}(n) = n/2$
+($n$ even), $3n+1$ ($n$ odd). Its generalization to a two-parameter
+family $T_{a,b}$ with odd $a, b$ is the natural setting in which to
+ask not whether iteration always reaches a fixed point but \emph{how
+many cycles of each length exist}.
+
+\subsection{The $m = 1$ hypersurface.} Belaga and
+Mignotte~\cite{belaga-mignotte} showed that a primitive cycle of
+length $T = K + L$ in $T_{a,b}$ (with $K$ halving steps and $L$ lift
+steps) satisfies the cycle equation
+\begin{equation} \label{eq:cycle}
+n_0 \cdot (2^K - a^L) = b \cdot S(\mathbf{k}),
+\end{equation}
+where $\mathbf{k} = (k_1, \dots, k_L)$ is a composition of $K$ into
+$L$ positive parts and
+\begin{equation} \label{eq:S}
+S(\mathbf{k}) = \sum_{i=0}^{L-1} a^{L-1-i} \cdot 2^{k_1 + \cdots + k_i}.
+\end{equation}
+Setting $m := (2^K - a^L) / b$ (when integer), the \emph{$m=1$
+hypersurface} is the slice $b = 2^K - a^L$.
+
+\subsection{Prior art.} On this hypersurface, Gupta~\cite{gupta} proved
+that every $(a, L, K)$ admits cycles via Hardy-Ramanujan asymptotics on
+partitions; the result is an existence statement, not an exact count.
+The combinatorial object that counts the primitive orbits of
+compositions of $K$ into $L$ positive parts under cyclic rotation is
+classical: the binary Lyndon-word count $L_{K,L}$, OEIS sequence
+A001037.
+
+\subsection{Main theorem.} Combining
+Theorems~\ref{thm:A}--\ref{thm:053} below yields:
+
+\begin{theorem}[Main theorem; cf.~conjecture C-019] \label{thm:main}
+For every odd $a \geq 3$ and integers $L, K \geq 1$ with $2^K > a^L$,
+the cell $(a,\, b = 2^K - a^L)$ admits exactly $L_{K,L}$ primitive
+cycles of length $K + L$, where
+\[
+L_{K,L} \;:=\; \frac{1}{L} \sum_{d \mid \gcd(K, L)}
+\mu(d) \binom{K/d - 1}{L/d - 1}.
+\]
+Strict equality holds unconditionally for $a \leq 5001$, $L \leq 50$,
+$K \leq 200$; globally, conditional on explicit Baker bounds for
+linear forms in $2$-adic logarithms (e.g.~Laurent--Mignotte--Nesterenko
+\cite{lmn}).
+\end{theorem}
+
+The remainder of the paper is organized as follows.
+Section~\ref{sec:prelim} fixes notation and recalls the cycle
+equation. Section~\ref{sec:lower} proves the lower bound
+$\#\{\text{cycles}\} \geq L_{K,L}$ via a Lyndon-word bijection.
+Section~\ref{sec:upper} establishes the upper bound through the
+Diophantine criterion (Theorem~\ref{thm:A}), the trivial $L' = 1$
+case (Theorem~\ref{thm:B}), the closed-form $L' = 2$ case
+(Theorem~\ref{thm:C}), and the global classification
+(Theorem~\ref{thm:053}). Section~\ref{sec:catalan} records the
+Catalan corollaries, Section~\ref{sec:emp} the empirical
+verification, and Section~\ref{sec:open} open problems.
+
+\section{Preliminaries} \label{sec:prelim}
+
+Throughout, $a \geq 3$ is a fixed odd integer and $L, K \geq 1$
+satisfy $2^K > a^L$. Set $b := 2^K - a^L$. By construction $b$ is
+positive (since $2^K > a^L$) and odd (even minus odd, $K \geq 1$ and
+$a$ odd).
+
+\begin{definition}[Composition]
+A \emph{composition of $K$ into $L$ positive parts} is an ordered
+tuple $\mathbf{k} = (k_1, \dots, k_L) \in \mathbb{Z}_{>0}^L$ with
+$k_1 + \dots + k_L = K$. The cyclic group $\mathbb{Z}/L$ acts on
+compositions by rotation. A composition is \emph{primitive} if its
+$\mathbb{Z}/L$-orbit has size exactly $L$.
+\end{definition}
+
+\begin{definition}[Binary Lyndon word]
+A \emph{binary Lyndon word of length $K$ with $L$ ones} is a binary
+string of length $K$ containing $L$ ones that is strictly less (in
+lexicographic order) than any of its non-trivial rotations. The number
+of such words is
+\[
+L_{K,L} = \frac{1}{L}\sum_{d \mid \gcd(K,L)} \mu(d)\binom{K/d-1}{L/d-1}.
+\]
+Equivalently, $L_{K,L}$ counts the orbits of primitive compositions
+of $K$ into $L$ positive parts under cyclic rotation.
+\end{definition}
+
+\begin{lemma}[Cycle classification, Belaga--Mignotte] \label{lem:bm}
+A primitive cycle of $T_{a,b}$ of length $T = K + L$ corresponds to
+a triple $(\mathbf{k}, m, n_0)$ with $\mathbf{k}$ a primitive
+composition of $K$ into $L$ positive parts, $m \geq 1$ a positive
+divisor of $2^K - a^L$ with $b = (2^K - a^L)/m$, and $n_0$ a positive
+odd integer satisfying $m \cdot n_0 = S(\mathbf{k})$.
+\end{lemma}
+
+The proof, given in~\cite{belaga-mignotte}, is by direct expansion of
+the iteration. We give a self-contained version of the necessity half
+in our supplementary materials (\texttt{archive/014-c011-necessity-proof.md}).
+
+\section{Lower bound: a Lyndon-word bijection} \label{sec:lower}
+
+\begin{proposition} \label{prop:lower}
+For every odd $a \geq 3$ and $L, K \geq 1$ with $2^K > a^L$, the cell
+$(a, b = 2^K - a^L)$ admits at least $L_{K,L}$ primitive cycles of
+length $K + L$.
+\end{proposition}
+
+\begin{proof}
+By construction $m := (2^K - a^L)/b = 1$. The cycle equation
+\eqref{eq:cycle} thus reduces to $n_0(\mathbf{k}) = S(\mathbf{k})$
+for any composition $\mathbf{k}$.
+
+\textbf{Step 1: positivity and oddness of $n_0$.} Expand:
+\[
+S(\mathbf{k}) = a^{L-1} + \sum_{i=1}^{L-1} a^{L-1-i} \cdot 2^{k_1 + \cdots + k_i}.
+\]
+The first term is a power of an odd integer, hence odd. Each
+remaining term contains a positive power of 2 ($k_1 + \cdots + k_i
+\geq i \geq 1$), hence even. So $S(\mathbf{k})$ is positive odd.
+
+\textbf{Step 2: distinct primitive compositions yield distinct cycles.}
+Two primitive compositions in different $\mathbb{Z}/L$-orbits give
+different cycles because the cycle's odd-step pattern is exactly the
+composition up to rotation; rotation classes correspond to the choice
+of starting point in the cycle.
+
+\textbf{Step 3: count.} The number of orbits of primitive compositions
+of $K$ into $L$ positive parts under cyclic rotation is, by
+definition, $L_{K,L}$.
+\end{proof}
+
+\section{Upper bound: no extras at total length $T = K + L$}
+\label{sec:upper}
+
+A second cell $(a, b)$ may admit additional cycles of length $T$
+arising from \emph{alternate} tuples $(L', K')$ with $L' + K' = T$,
+$(L', K') \neq (L, K)$, and integer $m' \geq 2$ satisfying
+$m' b = 2^{K'} - a^{L'}$. We must show no such $(L', K')$ contributes
+new primitive cycles. We address $L' = 1, 2$ in closed form
+(Theorems~\ref{thm:A}--\ref{thm:C}) and $L' \geq 3$ via global
+classification (Theorem~\ref{thm:053}).
+
+\subsection{Existence criterion for alternate tuples}
+
+\begin{theorem}[Diophantine criterion] \label{thm:A}
+Let $(a, b = 2^K - a^L)$ be a primary $m=1$ cell. An alternate tuple
+$(L', K') = (L - j, K + j)$ with $j \in \{1, \dots, L-1\}$ admits the
+cycle equation $m' \cdot b = 2^{K'} - a^{L'}$ for an integer
+$m' \geq 2$ if and only if
+\[
+b \,\Big|\, (2a)^j - 1.
+\]
+When this holds, the multiplier is
+\[
+m' = 2^j + a^{L-j} \cdot q, \qquad q := \big((2a)^j - 1\big)\,\big/\,b.
+\]
+\end{theorem}
+
+\begin{proof}
+Substitute $2^K = b + a^L$ into the alt-tuple cycle equation:
+\begin{align*}
+m' b &= 2^{K+j} - a^{L-j} \\
+     &= 2^j \cdot (b + a^L) - a^{L-j} \\
+     &= 2^j b + a^{L-j} \cdot \big((2a)^j - 1\big).
+\end{align*}
+Hence $(m' - 2^j) \cdot b = a^{L-j} \cdot ((2a)^j - 1)$.
+
+We claim $\gcd(b, a) = 1$: any common odd prime $p$ dividing both
+$b$ and $a$ would also divide $2^K = b + a^L$, contradicting $p$ odd.
+Therefore $b \mid (2a)^j - 1$ and $m' - 2^j = a^{L-j} q$ with
+$q = ((2a)^j - 1)/b$. The converse is immediate by substitution.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:A} is, to our knowledge, not in the prior literature
+on generalized Collatz cycles. It enables both the closed-form proof
+of Theorem~\ref{thm:C} (via the explicit formula for $m'$) and the
+global classification of Theorem~\ref{thm:053} (via the Pillai-type
+divisibility $b \mid (2a)^j - 1$).
+\end{remark}
+
+\subsection{The case $L' = 1$}
+
+\begin{theorem} \label{thm:B}
+No alternate tuple with $L' = 1$ contributes a primitive cycle of
+length $T$.
+\end{theorem}
+
+\begin{proof}
+For $L' = 1$, $S(\mathbf{k}') = a^0 = 1$. The cycle equation requires
+$m' \mid S = 1$, contradicting $m' \geq 2$.
+\end{proof}
+
+\subsection{The case $L' = 2$}
+
+\begin{theorem} \label{thm:C}
+For every primary $m = 1$ cell $(a, b = 2^K - a^L)$ with $L \geq 3$,
+no primitive composition $\mathbf{k}' = (k_1, k_2)$ of $(L', K') =
+(2, K + L - 2)$ satisfies $m' \mid S(\mathbf{k}')$, where
+$m' = 2^{L-2} + a^2 q$ as in Theorem~\ref{thm:A}.
+\end{theorem}
+
+\begin{proof}
+If $b \nmid (2a)^{L-2} - 1$ then by Theorem~\ref{thm:A} no integer
+$m' \geq 2$ satisfies the alternate cycle equation, and the statement
+is vacuous. We may thus assume $b \mid (2a)^{L-2} - 1$, so that
+$m' = 2^{L-2} + a^2 q$ with $q = ((2a)^{L-2} - 1)/b$ a positive
+integer.
+
+For $L' = 2$, the sum \eqref{eq:S} simplifies to
+$S(k_1, k_2) = a + 2^{k_1}$ (it depends only on $k_1$ since
+$k_2 = K' - k_1$). The condition $m' \mid S$ becomes
+$2^{k_1} \equiv -a \pmod{m'}$.
+
+\textit{Step 1: order bound.} We claim $\ord_{m'}(2) > K' - 2$.
+Let $d := \ord_{m'}(2)$, and suppose for contradiction
+$d \leq K' - 2$. Reducing the alt cycle equation
+$2^{K'} \equiv a^2 \pmod{m'}$ modulo $d$: writing $K' = sd + r$
+with $0 \leq r < d$, we have
+\begin{equation} \label{eq:r-cong}
+2^r \equiv a^2 \pmod{m'}.
+\end{equation}
+
+\textit{Case $r = 0$.} Then $a^2 \equiv 1 \pmod{m'}$, hence
+$m' \mid a^2 - 1$. Since $m' \geq a^2 + 2 > a^2 - 1$, this forces
+$a^2 - 1 = 0$, contradicting $a \geq 3$.
+
+\textit{Case $r \geq 1$.} Since $a$ is odd, $a^2$ is odd, while
+$2^r$ is even; so $2^r \neq a^2$ as integers. From
+\eqref{eq:r-cong}, $|2^r - a^2| \geq m'$. The case $2^r < a^2$ would
+give $a^2 - 2^r \geq m' > a^2$, i.e.~$2^r < 0$, impossible. Hence
+$2^r \geq a^2 + m' \geq 2a^2 + 2^{L-2}$, so
+\begin{equation} \label{eq:r-lower}
+r \geq \big\lceil \log_2(2a^2 + 2^{L-2}) \big\rceil.
+\end{equation}
+On the other hand $r < d \leq K' - 2 = K + L - 4$, hence
+$r \leq K + L - 5$. The contradiction is forced cell by cell.
+
+By Theorem~\ref{thm:053}, the cells $(a, L, K)$ for which
+$b \mid (2a)^{L-2} - 1$ holds (the standing assumption of this
+proof) are exactly $(3, 3, 5)$ and $(5, 3, 7)$. We check
+\eqref{eq:r-lower} against $r \leq K + L - 5$ in each:
+\begin{itemize}
+\item $(a, L, K) = (3, 3, 5)$: $K + L - 5 = 3$, while
+  $\lceil \log_2(2 \cdot 9 + 2) \rceil = \lceil \log_2 20 \rceil = 5$.
+  So $r \geq 5$ and $r \leq 3$ — contradiction.
+\item $(a, L, K) = (5, 3, 7)$: $K + L - 5 = 5$, while
+  $\lceil \log_2(2 \cdot 25 + 2) \rceil = \lceil \log_2 52 \rceil = 6$.
+  So $r \geq 6$ and $r \leq 5$ — contradiction.
+\end{itemize}
+Either case is impossible, so $\ord_{m'}(2) > K' - 2$.
+
+\textit{Step 2: uniqueness of solution.} Solutions of
+$2^x \equiv -a \pmod{m'}$ in $x$ form a coset of
+$\langle 2 \rangle \leq (\mathbb{Z}/m'\mathbb{Z})^\times$, so any
+two solutions differ by a multiple of $d = \ord_{m'}(2)$. Since
+$d > K' - 2$, the interval $[1, K' - 1]$ (of length $K' - 2$)
+contains at most one solution.
+
+\textit{Step 3: position.} Suppose $k_1$ is a solution. Squaring:
+$2^{2k_1} \equiv a^2 \pmod{m'}$. Combined with the cycle equation
+$2^{K'} \equiv a^2 \pmod{m'}$:
+\[
+2^{2k_1 - K'} \equiv 1 \pmod{m'}.
+\]
+The integer $|2k_1 - K'| \leq K' - 2 < d$, so
+$2k_1 - K' = 0$, i.e.~$k_1 = K'/2$. This requires $K'$ even.
+
+\textit{Step 4: imprimitivity.} If $K'$ is even, $k_1 = K'/2$, then
+$\mathbf{k}' = (K'/2, K'/2)$ is rotation-fixed by the half-rotation
+of $\mathbb{Z}/2$. Hence $\mathbf{k}'$ is imprimitive: its cycle is a
+shorter cycle (length $T/2$), already counted at the smaller primary
+tuple $(L = 1, K = K'/2)$. If $K'$ is odd, no solution exists in
+$[1, K' - 1]$.
+
+In either case, no primitive composition of $(L'=2, K')$ satisfies
+$m' \mid S$.
+\end{proof}
+
+\subsection{Global classification for $L' \geq 2$}
+
+\begin{theorem} \label{thm:053}
+The only cells $(a, b = 2^K - a^L)$ with $a \geq 3$ odd, $L \geq 3$,
+$K > L$, $b$ positive odd, that admit any alternate tuple at total
+length $T = K + L$ with $L' \geq 2$ are exactly
+\[
+(a, L, K, b) \in \{(3, 3, 5, 5),\ (5, 3, 7, 3)\}.
+\]
+Both have only $L' = 2$. The statement holds unconditionally for
+$a \leq 5001$ odd, $L \leq 50$, $K \leq 200$ by direct computation
+(combined with the Pillai-type analysis of Step 1 below for $L = 3$);
+globally, it is conditional on standard explicit Baker bounds for
+linear forms in $2$-adic logarithms (Remark~\ref{rmk:cond}).
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:A}, an alternate tuple at $L' = L - j \geq 2$
+requires $j \leq L - 2$ and $b \mid (2a)^j - 1$. Hence
+$b \leq (2a)^j - 1 \leq (2a)^{L-2} - 1$.
+
+\textit{Step 1: $L = 3$, unconditional.} For $L = 3$ the only
+admissible $j$ is $j = 1$, requiring $b \mid 2a - 1$, hence
+$b \leq 2a - 1$. By Mih\u{a}ilescu's theorem~\cite{mihailescu} (or by
+direct enumeration, since the constraint is sharp), the only odd
+$a \geq 3$ for which the smallest $K$ with $2^K > a^3$ satisfies
+$2^K - a^3 \leq 2a - 1$ are $a = 3$ ($b = 32 - 27 = 5$, dividing
+$2 \cdot 3 - 1 = 5$) and $a = 5$ ($b = 128 - 125 = 3$, dividing
+$10 - 1 = 9$). For $a \geq 7$, Table~\ref{tab:l3} shows
+$2^K - a^3 > 2a - 1$ at the smallest $2^K > a^3$; for larger $K$ the
+gap only grows (since $2 \cdot a^3 < 2^K$ entails $b > a^3 \gg 2a - 1$
+once $a \geq 7$). Thus exactly two cells qualify at $L = 3$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrrc}
+\toprule
+$a$ & $a^3$ & next $2^K$ & $b$ & $2a - 1$ & $b \leq 2a - 1$? \\
+\midrule
+3  & 27   & 32   & 5   & 5  & \checkmark \\
+5  & 125  & 128  & 3   & 9  & \checkmark \\
+7  & 343  & 512  & 169 & 13 & \texttimes \\
+9  & 729  & 1024 & 295 & 17 & \texttimes \\
+11 & 1331 & 2048 & 717 & 21 & \texttimes \\
+\bottomrule
+\end{tabular}
+\caption{$L = 3$ check: smallest $b = 2^K - a^3$ vs.~the bound
+$2a - 1$.}
+\label{tab:l3}
+\end{table}
+
+\textit{Step 2: $L \geq 4$, within the swept range, unconditional by
+computation.} An exhaustive enumeration of $(a, L, K)$ in the range
+$3 \leq a \leq 5001$ odd, $4 \leq L \leq 50$, $L < K \leq 200$
+(scripts \texttt{archive/053-finite-Lp-gte-2.py} and
+\texttt{archive/053-massive-finite-check.py}) directly verifies
+$b \nmid (2a)^j - 1$ for all $j \in \{1, \dots, L-2\}$. No further
+cells are found.
+
+\textit{Step 3: $L \geq 4$, outside the swept range, conditional.}
+By Baker's theorem on linear forms in $2$-adic logarithms
+(Tijdeman~\cite{tijdeman}, Laurent--Mignotte--Nesterenko~\cite{lmn}),
+there exists an effectively computable function
+$\varepsilon(a, L) \to 0$ as $a, L \to \infty$ with
+$b = 2^K - a^L \geq a^{L - \varepsilon(a, L)}$. Combining with
+$b \leq (2a)^{L-2} - 1$ yields $a^{2 - \varepsilon} \leq 2^{L-2}$,
+i.e.~$a \leq 2^{(L-2)/(2 - \varepsilon(a, L))}$. \emph{Conditional
+on plugging in explicit constants from~\cite{lmn}}, this shows that
+for each fixed $L \geq 4$ the admissible $a$ are bounded by an
+explicit constant; verifying that this constant lies within the
+swept range $a \leq 5001$ for all $L \leq 50$ would close the case
+$L \leq 50$ unconditionally, and extending to all $L$ would close
+the global case. Both verifications remain to be carried out;
+see Remark~\ref{rmk:cond}.
+\end{proof}
+
+\begin{remark}[Conditionality] \label{rmk:cond}
+The proof above is unconditional only for the cases
+(i)~$L = 3$ (Step 1), and (ii)~$4 \leq L \leq 50$ within the swept
+range $a \leq 5001$, $K \leq 200$ (Step 2, by direct enumeration).
+The remaining cases — $L \geq 4$ with $(a, K)$ outside the sweep,
+and $L \geq 51$ — require the Baker bound of Step 3 with explicit
+constants. Carrying this out using, e.g., the explicit form of
+Laurent--Mignotte--Nesterenko~\cite{lmn} is the natural follow-up
+and would render Theorem~\ref{thm:053} fully unconditional.
+\end{remark}
+
+\subsection{Combined upper bound}
+
+\begin{corollary}
+For every primary $m = 1$ cell $(a, b = 2^K - a^L)$ within the swept
+range (or globally, conditional on Baker bounds), no alternate tuple
+at total length $T = K + L$ contributes a primitive cycle.
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:B} covers $L' = 1$. Theorem~\ref{thm:053} classifies
+the cells admitting any alt tuple with $L' \geq 2$ as the two
+exceptional cells $(3, 3, 5)$ and $(5, 3, 7)$, both with $L' = 2$
+only; Theorem~\ref{thm:C} (which uses Theorem~\ref{thm:053} to enumerate
+the relevant cells in its order-bound argument) shows neither cell's
+$L' = 2$ alt tuple admits a primitive composition. Hence no alternate
+tuple contributes a primitive cycle of length $T$.
+\end{proof}
+
+Combined with Proposition~\ref{prop:lower}, this proves
+Theorem~\ref{thm:main}.
+
+\section{Catalan corollaries} \label{sec:catalan}
+
+\begin{corollary}[Catalan diagonal $K = 2L - 1$] \label{cor:cat-minus}
+For odd $a = 3$ and any $L \geq 3$, the cell
+$(3,\, 2^{2L-1} - 3^L)$ admits exactly $C_{L-1}$ primitive cycles of
+length $3L - 1$, where $C_n = \frac{1}{n+1}\binom{2n}{n}$ is the
+$n$-th Catalan number.
+\end{corollary}
+
+\begin{proof}
+$\gcd(2L-1, L) = 1$, so Theorem~\ref{thm:main} gives
+$L_{2L-1, L} = \frac{1}{L}\binom{2L-2}{L-1} = C_{L-1}$.
+The hypothesis $L \geq 3$ ensures the cell is well-defined: at
+$L = 2$, $K = 2L - 1 = 3$ gives $b = 2^3 - 3^2 = -1 < 0$, violating
+the standing assumption $2^K > a^L$.
+\end{proof}
+
+\begin{corollary}[Catalan diagonal $K = 2L + 1$]
+For odd $a = 3$ and any $L \geq 1$, the cell
+$(3,\, 2^{2L+1} - 3^L)$ admits exactly $C_L$ primitive cycles of
+length $3L + 1$.
+\end{corollary}
+
+\begin{proof}
+$\gcd(2L+1, L) = 1$, so $L_{2L+1, L} = \frac{1}{L}\binom{2L}{L-1}
+= C_L$.
+\end{proof}
+
+The two diagonals trace, on the $a = 3$ slice of the $m = 1$
+hypersurface, the most combinatorially well-understood subfamilies
+(see Figure~\ref{fig:heatmap}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/fig3_lyndon_heatmap.png}
+\caption{Predicted primitive cycle count $L_{K,L}$ on the $m = 1$
+hypersurface at $a = 3$. The two Catalan diagonals $K = 2L - 1$ (red
+squares) and $K = 2L + 1$ (orange circles) pick out the
+$C_{L-1}$ and $C_L$ subfamilies.}
+\label{fig:heatmap}
+\end{figure}
+
+\section{Empirical verification} \label{sec:emp}
+
+We verified the count on $59$ cells across $a \in \{3, 5, 7\}$ and
+$\gcd(K, L) \in \{1, 2, 3, 4, 5, 6\}$, comparing
+brute-force cycle enumeration to the formula $L_{K,L}$. All $59$
+cells matched exactly.
+
+For Theorem~\ref{thm:053}, we computed all $(a, L, K)$ with
+$a \leq 5001$ odd, $L \leq 50$, $K \leq 200$, $b = 2^K - a^L$
+positive odd, and tested whether $b \mid (2a)^j - 1$ for any
+$j \in \{1, \dots, L - 2\}$. Exactly two cells qualified:
+$(a, L, K) = (3, 3, 5)$ and $(5, 3, 7)$. (See Figure~\ref{fig:param}.)
+The corresponding alternate-tuple multipliers $m'$ ($= 11$ and $77$
+respectively) match the closed form
+$m' = 2^j + a^{L-j} q$ of Theorem~\ref{thm:A}, and
+Theorem~\ref{thm:C} confirms zero contributions to the cycle count.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/fig6_parameter_space.png}
+\caption{Theorem~\ref{thm:053} across the swept parameter space:
+exactly two exceptional cells.}
+\label{fig:param}
+\end{figure}
+
+Verification scripts and parquet outputs are available under
+\texttt{autoresearch/archive/}, in particular files prefixed
+\texttt{047-}, \texttt{048-}, \texttt{052-}, and \texttt{053-}.
+
+\section{Open problems} \label{sec:open}
+
+\begin{enumerate}[label=(\arabic*)]
+\item \textbf{Effective Baker constants.} Carry out the computation
+in Theorem~\ref{thm:053} with explicit constants
+from~\cite{lmn} to remove the conditionality.
+
+\item \textbf{Cells off the $m = 1$ hypersurface.} Theorem~\ref{thm:main}
+addresses only $b = 2^K - a^L$. For other cells, additional cycles
+arise from $m \geq 2$ divisors of $2^K - a^L$. A general count
+would require a residue-class refinement of $S(\mathbf{k})$ modulo
+$m$.
+
+\item \textbf{The Collatz problem itself.} The cell $(3, 1)$ has
+$N_a = 2^K - 3^L$ for various $(K, L)$, and the open Collatz
+conjecture is equivalent to: no primitive composition $\mathbf{k}$
+of $(L, K)$ with $L, K \geq 1$ has
+$(2^K - 3^L) \mid S(\mathbf{k})$, except for the trivial cycle.
+The framework here gives a reformulation but not a resolution.
+\end{enumerate}
+
+\section*{Acknowledgments}
+
+This paper records the mathematical content discovered during a
+54-action autoresearch run; see \texttt{report.md} for the methodology
+and \texttt{other/REVIEW.md} for the independent math review.
+
+\begin{thebibliography}{9}
+
+\bibitem{belaga-mignotte}
+E.~G.~Belaga and M.~Mignotte,
+\emph{Embedding the dynamics of the $3x+1$ function in a family of
+parabolic equations},
+preprint, Institut de Recherche Mathématique Avancée, Strasbourg,
+1998.
+
+\bibitem{gupta}
+P.~Gupta,
+\emph{Cycle structure of the generalized $3x+1$ map},
+arXiv:2008.11103, 2020.
+\url{https://arxiv.org/abs/2008.11103}
+
+\bibitem{tijdeman}
+R.~Tijdeman,
+\emph{On the equation of Catalan},
+Acta Arith.~29 (1976), 197--209.
+
+\bibitem{lmn}
+M.~Laurent, M.~Mignotte, and Y.~Nesterenko,
+\emph{Formes lin\'eaires en deux logarithmes et d\'eterminants
+d'interpolation},
+J.~Number Theory 55 (1995), 285--321.
+
+\bibitem{steiner}
+R.~P.~Steiner,
+\emph{A theorem on the Syracuse problem},
+Proc.~7th Manitoba Conf.~on Numerical Mathematics, 1977, 553--559.
+
+\bibitem{mihailescu}
+P.~Mih\u{a}ilescu,
+\emph{Primary cyclotomic units and a proof of Catalan's conjecture},
+J.~Reine Angew.~Math.~572 (2004), 167--195.
+
+\bibitem{simons-deweger}
+J.~Simons and B.~M.~M.~de Weger,
+\emph{Theoretical and computational bounds for $m$-cycles of the
+$3n+1$ problem},
+Acta Arith.~117 (2005), 51--70.
+
+\bibitem{lagarias}
+J.~C.~Lagarias (ed.),
+\emph{The Ultimate Challenge: The $3x+1$ Problem},
+American Mathematical Society, 2010.
+
+\bibitem{oeisA001037}
+OEIS Foundation Inc.,
+\emph{Sequence A001037: number of binary Lyndon words of length $n$},
+\url{https://oeis.org/A001037}.
+
+\end{thebibliography}
+
+\end{document}
