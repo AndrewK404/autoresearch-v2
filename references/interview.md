@@ -2,7 +2,7 @@
 
 The interview is **one consolidated `AskUserQuestion` call**, not a multi-turn drill. Lay out every question the user can plausibly answer up front so they can fill in the whole picture in a single turn. Then, *only if the user signals they need to attach additional data* (env keys, framework config snippets, internal links, file uploads, etc.), follow up with a short data-collection message — that is the only acceptable second touch before scaffolding.
 
-The goal is to populate `CONFIG.md` and `RESUME.md` (see `setup.md` Stage 1).
+The goal is to populate `CONFIG.md` (see `setup.md` Stage 1) — the single frozen contract that holds everything the interview produces (mode, metric/done-criterion, eval, scope, constraints, integrations, envs, bootstrap, important answers).
 
 ---
 
@@ -103,7 +103,7 @@ If — and only if — the answers above reveal that the user must hand over add
 
 ## After the ask block
 
-1. Parse the user's response into draft `CONFIG.md` (including `## Mode`) and `RESUME.md`.
-2. Show the drafts back to the user and ask for explicit confirmation.
+1. Parse the user's response into a single draft `CONFIG.md` (including `## Mode`, plus `## Envs`, `## Bootstrap`, and `## Important answers`).
+2. Show the draft back to the user and ask for explicit confirmation.
 3. If the user edits anything — update, re-show the diff, re-confirm.
 4. Move to Stage 2 (Scaffold) only after an explicit "ok".
