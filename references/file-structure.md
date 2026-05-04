@@ -68,25 +68,12 @@ is typically empty or holds general scope rules)
 
 ## Termination
 - <max experiments | plateau window | target threshold | unlimited>
-```
-
----
-
-## RESUME.md
-
-**Role:** the **accumulated context for re-setup**. Important interview answers + envs (with `.env` references) + bootstrap commands. Loaded on warm start so the agent knows the environment, but its primary purpose is to make re-setup cheap when the contract has to change.
-
-Frozen after baseline. Updates only happen during a deliberate re-setup.
-
-**Sample layout:**
-
-```markdown
-# RESUME
 
 ## Important answers
-<Only the answers from the interview that frame the agent's context but did not
-make it into CONFIG. Examples: "the user prefers conservative edits", "target
-hardware: a single A100 40GB", "data is refreshed quarterly, not in real time".>
+<Interview answers that frame the agent's context but didn't fit cleanly into
+the sections above. Examples: "user prefers conservative edits", "target
+hardware: a single A100 40GB", "data is refreshed quarterly, not in real
+time".>
 
 ## Envs
 - WANDB_API_KEY — in `.env`
@@ -105,16 +92,33 @@ If something breaks, recreate the environment and repeat.
 3. `<...>`
 
 ## Notes
-<Optional: one-off remarks about the environment that matter for reproducibility.>
+<Optional: one-off remarks about the environment that matter for
+reproducibility.>
 ```
+
+The full contract — goal, metric/done-criterion, eval, scope, constraints,
+envs, bootstrap, important answers — lives in this one file. Frozen after
+baseline; any change requires explicit re-setup.
 
 ---
 
 ## MEMORY.md
 
-**Role:** live state dashboard. Cold-startable — `MEMORY.md` plus `CONFIG / RESUME / LESSONS` is enough to resume work. Hard cap: **400 lines**.
+**Role:** live state dashboard, **and the single home for everything the user
+tells the agent after setup**. Cold-startable — `MEMORY.md` plus `CONFIG / LESSONS` is enough to resume work. Hard cap: **400 lines**.
 
-`MEMORY.md` is also the place for genuinely important user input received mid-run. After setup, if the user shares context that affects strategy or perception of constraints (e.g. "we just got a second GPU", "this paper is highly relevant"), the agent records it here — typically in `Status`, under `Open questions`, or in a fresh optional section. Trivia is not recorded. Anything that would change the contract itself triggers a re-setup, not a MEMORY update.
+After setup, **all** new user input goes here, not into `CONFIG.md` (which is
+frozen). The two flavours:
+
+- **Trajectory-changing context** ("we just got a second GPU", "this paper
+  is highly relevant", "actually, batch size 256 is fine if you accept the
+  MFU drop") — recorded in `Status`, under `Open questions`, or in a fresh
+  optional section. The agent's behaviour adjusts on the next dispatch.
+- **Genuine contract changes** (new metric, new scope, new eval) do NOT go
+  here — they trigger a re-setup that updates `CONFIG.md`. Anything else
+  the user says, even if it sounds important, lives in `MEMORY.md`.
+
+Trivia is not recorded.
 
 ### Fixed sections (always present)
 

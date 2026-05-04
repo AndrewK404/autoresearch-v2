@@ -10,7 +10,7 @@ A skill that turns the Claude Code main thread into an event-driven coordinator 
 ## 1. Core principles
 
 1. **Single target, single scalar** *(experiment mode)*. Drift is impossible; keep/discard is just `<` or `>`. In **research-only mode** (no executable experiment) there is no scalar — the loop is hypothesis → investigation → conclusion logged to `log/` (see §1a).
-2. **Frozen contract.** `CONFIG.md`, `RESUME.md`, and (in experiment mode) the eval command are immutable after baseline. Changes require an explicit re-setup.
+2. **Frozen contract.** `CONFIG.md` and (in experiment mode) the eval command are immutable after baseline. Changes require an explicit re-setup. After setup, all new user input — anything *short of* a contract change — goes into `MEMORY.md`, not into `CONFIG.md`.
 3. **Experiments = ground truth, research = advisory.** Only ≥ 2 confirming keep experiments promote a claim into `LESSONS.md`. *(In research-only mode, `LESSONS.md` is populated from the user's own confirmed conclusions instead — see §1a.)*
 4. **Async, event-driven.** Sub-agent returns arrive asynchronously. No cycle pairing, no fixed cadence.
 5. **Falsification over confirmation.** Every hypothesis carries a numeric falsifier *(experiment mode)* or a clearly stated rejection condition *(research-only mode)*. Investigations are designed to risk being wrong.
@@ -29,7 +29,7 @@ Mode is recorded in `CONFIG.md ## Mode` and is part of the frozen contract. Swit
 
 ## 2. End-to-end flow
 
-**Stage 0 — Setup (one-time).** After the interview the project has an `autoresearch/` directory at the **project root** containing: `CONFIG.md`, `RESUME.md`, `MEMORY.md`, `LESSONS.md`, `log/`, `memory/`, `archive/`, `log.tsv`. *In experiment mode* a baseline (exp/000) has been run and the starting metric is fixed. *In research-only mode* the baseline is skipped and the contract is activated as soon as the user confirms `CONFIG.md` and `RESUME.md`. Either way, the frozen contract becomes active at the end of Stage 0.
+**Stage 0 — Setup (one-time).** After the interview the project has an `autoresearch/` directory at the **project root** containing: `CONFIG.md`, `MEMORY.md`, `LESSONS.md`, `log/`, `memory/`, `archive/`, `log.tsv`. *In experiment mode* a baseline (exp/000) has been run and the starting metric is fixed. *In research-only mode* the baseline is skipped and the contract is activated as soon as the user confirms `CONFIG.md`. Either way, the frozen contract becomes active at the end of Stage 0.
 
 **Stage 1 — Kick-off.**
 - The user states the task.
@@ -91,7 +91,7 @@ The current level lives in `MEMORY.md ## Status`. On a level change — record i
 
 ### MEMORY.md — live dashboard
 
-Hard cap: **400 lines**. Cold-startable: a fresh session needs only `CONFIG.md + RESUME.md + MEMORY.md + LESSONS.md` to understand the state and continue.
+Hard cap: **400 lines**. Cold-startable: a fresh session needs only `CONFIG.md + MEMORY.md + LESSONS.md` to understand the state and continue.
 
 **Structure — fixed header + fixed sections + optional sections.** Full template example:
 
@@ -134,7 +134,7 @@ Escalated one level early after plateau on L1 (4 experiments in a row, delta < 0
 
 **Header** is the status line. **Best, Status, Queue, Recent** are fixed and always present. **Avoid, Open questions, Active threads**, and any other sections are added by the agent as the current goal demands.
 
-**MEMORY.md also captures genuinely important user input mid-run.** After setup, if the user shares context that changes strategy, scope perception, or constraints — examples: "we just got a second GPU", "this paper is highly relevant to what you're doing", "actually, batch size 256 is fine if you accept the MFU drop" — the agent updates `MEMORY.md` (typically as a line in `Status`, an entry under `Open questions`, or a fresh optional section). Trivial chitchat does not go here. Anything that would change the contract itself (metric, scope, eval) is **not** a MEMORY update — it triggers a re-setup (see §7).
+**MEMORY.md is the single home for everything the user tells the agent after setup.** `CONFIG.md` is frozen; user input that does not change the contract goes here. Examples: "we just got a second GPU", "this paper is highly relevant to what you're doing", "actually, batch size 256 is fine if you accept the MFU drop" — the agent updates `MEMORY.md` (typically as a line in `Status`, an entry under `Open questions`, or a fresh optional section) and adjusts on the next dispatch. Trivial chitchat is not recorded. Anything that would change the contract itself (metric, scope, eval) is **not** a MEMORY update — it triggers a re-setup (see §7).
 
 **At 400 lines (compression):**
 1. Copy current `MEMORY.md` → `memory/NNN-memory.md` (zero-padded next id).
@@ -173,29 +173,25 @@ NNN  timestamp  type  actor  metric  delta  status  description  linked_files
 Every new session (after the first setup) loads:
 
 ```
-SKILL.md + CONFIG.md + RESUME.md + MEMORY.md + LESSONS.md
+SKILL.md + CONFIG.md + MEMORY.md + LESSONS.md
 ```
 
 `references/*` are loaded on-demand when needed.
 
 ## 7. Files and write ownership
 
-### CONFIG.md vs RESUME.md — different roles, both frozen
+### CONFIG.md — the single frozen contract
 
-Both files are immutable after baseline, but they serve different purposes:
+`CONFIG.md` is the **active frozen contract**: goal, metric (or done-criterion in research-only mode), eval command, scope, anti-gaming constraints, integrations, envs (refs to `.env`, never raw keys), bootstrap commands, and any important interview answers that frame the agent's context. The agent re-reads it any time decisions depend on the contract — at session start, before each dispatch, when validating a diff. Immutable after baseline.
 
-- **`CONFIG.md`** is the **active contract**: goal, metric, eval, scope, constraints, integrations. The agent re-reads it any time decisions depend on the contract — at session start, before each dispatch, when validating a diff.
-- **`RESUME.md`** is the **accumulated context for re-setup**: which questions the user already answered, which envs exist, which bootstrap commands worked. It is also loaded on warm start so the agent knows the environment, but its primary job is to make re-setup cheap when the user wants to change scope, the metric, or the eval — we don't ask everything from scratch.
-
-Re-setup happens when the **contract** must change ("let's also optimise memory, not just speed"; "you can now edit `utils.py`"; "the eval command should now use the held-out split"). User input that does **not** change the contract goes into `MEMORY.md`, not into a re-setup.
+Re-setup happens when the **contract** must change ("let's also optimise memory, not just speed"; "you can now edit `utils.py`"; "the eval command should now use the held-out split"). User input that does **not** change the contract goes into `MEMORY.md`, not into a re-setup. Re-setup loads `CONFIG.md` + `MEMORY.md` + the user's delta and rewrites `CONFIG.md` in place.
 
 ### Ownership table
 
 | File | Purpose | Writer |
 |---|---|---|
-| `CONFIG.md` | Active frozen contract: goal, metric+direction, eval command, scope, anti-gaming constraints, integrations | Setup only |
-| `RESUME.md` | Frozen accumulated context for re-setup: important interview answers + envs (refs to `.env`, never raw keys) + bootstrap commands | Setup only |
-| `MEMORY.md` | Live dashboard (see §6), 400-line cap, also captures important mid-run user input | Main |
+| `CONFIG.md` | Active frozen contract: goal, metric+direction, eval command, scope, anti-gaming constraints, integrations, envs, bootstrap, important interview answers | Setup only (and re-setup) |
+| `MEMORY.md` | Live dashboard (see §6), 400-line cap, **and the single home for everything the user tells the agent after setup** | Main |
 | `LESSONS.md` | Confirmed lessons (≥ 2 keep) | Main |
 | `log/NNN-*.md` | Per-action detailed notes with explicit reasoning | Main (on integration of returns) |
 | `memory/NNN-memory.md` | Frozen MEMORY.md snapshots from compression | Main (on compression) |
@@ -227,9 +223,9 @@ The minimum set is researcher + analyst. **The list below is examples, not exhau
 
 Details in `references/setup.md`.
 
-1. **Interview** — a single consolidated `AskUserQuestion` block (see `references/interview.md`). The **first question** of that block decides the operating mode (experiment vs research-only). The user answers all questions in one turn and may attach additional data (env keys, framework configs, links) in a follow-up message if asked. Important answers and envs → `RESUME.md`. Mode + (optionally) eval command + scope + constraints → `CONFIG.md`.
+1. **Interview** — a single consolidated `AskUserQuestion` block (see `references/interview.md`). The **first question** of that block decides the operating mode (experiment vs research-only). The user answers all questions in one turn and may attach additional data (env keys, framework configs, links) in a follow-up message if asked. Everything the interview produces — mode, (optionally) eval command, scope, constraints, envs, bootstrap commands, important answers — is consolidated into `CONFIG.md`.
 2. **Scaffold** — create the file tree, initialise empty `MEMORY.md`, `LESSONS.md`, `log.tsv` (header only), and empty `log/`, `memory/`, `archive/` directories.
-3. **Baseline** — required **only in experiment mode**. Run exp/000 to fix the starting metric; without a successful baseline the frozen contract is not active. *In research-only mode this stage is skipped*; the contract activates as soon as the user confirms `CONFIG.md` and `RESUME.md`.
+3. **Baseline** — required **only in experiment mode**. Run exp/000 to fix the starting metric; without a successful baseline the frozen contract is not active. *In research-only mode this stage is skipped*; the contract activates as soon as the user confirms `CONFIG.md`.
 
 ### Cold start (read order at first setup)
 

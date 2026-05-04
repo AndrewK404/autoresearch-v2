@@ -69,9 +69,10 @@ After setup, the project gets:
 
 ```
 autoresearch/
-├── CONFIG.md           # frozen: goal, metric, eval, scope, constraints
-├── RESUME.md           # frozen: important interview answers + envs + bootstrap
-├── MEMORY.md           # live dashboard, 400-line cap
+├── CONFIG.md           # frozen contract: goal, metric, eval, scope, constraints,
+│                       #   integrations, envs, bootstrap, important answers
+├── MEMORY.md           # live dashboard, 400-line cap; single home for all
+│                       #   user input received after setup
 ├── LESSONS.md          # confirmed lessons (≥ 2 keep)
 ├── log.tsv             # single action log
 ├── log/                # detailed NNN-<type>-<info>.md (e.g. 023-experiment-batch-256.md)
@@ -84,8 +85,9 @@ autoresearch/
 
 1. **Single target, single scalar.** Drift is impossible; keep/discard is just
    `<` or `>`.
-2. **Frozen contract.** `CONFIG.md`, `RESUME.md`, and the eval command are
-   immutable after baseline.
+2. **Frozen contract.** `CONFIG.md` and the eval command are immutable after
+   baseline. After setup, every new piece of user input goes into
+   `MEMORY.md`, never `CONFIG.md`.
 3. **Experiments = ground truth, research = advisory.** Only ≥ 2 keep
    experiments promote a claim into `LESSONS.md`.
 4. **Falsification over confirmation.** Every hypothesis carries a numeric
