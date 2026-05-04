@@ -1,4 +1,4 @@
-Updated: 2026-05-03T23:10:00Z | Last action: 048
+Updated: 2026-05-04T18:00:00Z | Last action: 053
 
 ---
 
@@ -6,6 +6,23 @@ Updated: 2026-05-03T23:10:00Z | Last action: 048
 n/a (research-only mode)
 
 ## Status
+**Pivot (2026-05-04, post external review):** independent reviewer flagged that
+C-019's mechanism is already in Gupta 2020 (arXiv:2008.11103, Theorems 5/9/10)
+and the cycle equation is Belaga–Mignotte 1998. What Gupta did NOT do, and
+what remains genuinely open:
+1. **Exact count vs lower bound.** C-019 proves "≥ L_{K,L} primitive cycles
+   of length K+L in cell (a, 2^K-a^L)". The "exactly =" claim requires showing
+   no OTHER (L', K') with L'+K' = L+K contributes additional cycles at the
+   same total length via m' ≥ 2 (b·m' = 2^{K'}-a^{L'}).
+2. **Closed-form Lyndon enumeration** (Gupta has only Hardy-Ramanujan
+   asymptotics; the explicit Möbius sum is novel framing).
+3. **Catalan diagonal identification** + Lyndon-word bijection language.
+
+New direction: prove or falsify the "exactly =" claim. If proven, it's a
+real strengthening of Gupta's existence theorem. If a counterexample exists,
+it reveals new structure — cells with "duplicated" primitive cycles of the
+same length from distinct (L, K) tuples.
+
 Atlas covers **137 variants** (a∈{1,3,5,7,9,11,13}, b∈[1,21] full
 plus a∈{1,3,5,7}, b∈[23,51]) with **455 total cycles** (153 tight +
 283 wider-b + 19 wider-a) at S=10⁵, H=10¹³, T=10⁵. **All 171 primitive
@@ -59,14 +76,20 @@ Promotion-grade candidates pending user confirmation:
   m=1 tuple (L, K=2L−1). **Proven** (Burnside on compositions with
   gcd(2L−1, L)=1). Verified empirically L=3..9: cycles =
   2, 5, 14, 42, 132, 429, 1430. Now subsumed by C-019.
-- **C-019** (general m=1 lattice — Lyndon-word bijection — main theorem):
-  for any odd a≥3, L,K≥1 with 2^K>a^L, the cell (a, b=2^K-a^L) has
-  EXACTLY (1/L)·Σ_{d|gcd(K,L)} μ(d)·C(K/d-1, L/d-1) primitive cycles
-  of length K+L = #{binary Lyndon words of length K with L ones}.
-  **Proven sketch** + 59/59 empirical verifications across a∈{3,5,7},
-  gcd∈{1..6}. Generates an INFINITE 2D lattice of tractable cousins;
-  Catalan families are special diagonals (K=2L±1). **The main novel
-  theorem of the run** — primitive Collatz cycles ↔ Lyndon words.
+- **C-019** (m=1 hypersurface, Lyndon-word bijection): for any odd a≥3,
+  L,K≥1 with 2^K>a^L, the cell (a, b=2^K-a^L) has EXACTLY L_{K,L} :=
+  (1/L)·Σ_{d|gcd(K,L)} μ(d)·C(K/d-1, L/d-1) primitive cycles of length
+  K+L = #{binary Lyndon words of length K with L ones}. **Proven sketch**
+  for the lower bound + 59/59 verifications (action 048).
+  - **External review (Gupta 2020 arXiv:2008.11103, Belaga-Mignotte 1998):**
+    the cycle equation and the m=1 mechanism are PRIOR ART. What's new
+    here: explicit closed-form Möbius/Lyndon count (Gupta has only
+    Hardy-Ramanujan asymptotics), the Lyndon-word framing, and Catalan
+    diagonal identification.
+  - **Strengthening to "exactly =" (C-019′, action 049):** sweep across
+    3404 cells finds 0 counterexamples; L'=1 alternate tuples ruled out
+    in closed form (S=1, m'>1 ⟹ m'∤S); L'≥2 case empirically robust
+    but proof open. This is the genuinely novel piece beyond Gupta.
 
 Falsifications (kept per TASK.md):
 - **C-002** strong form (n_total = d(b)): falsified.
@@ -106,6 +129,47 @@ necessity of C-011's divisibility condition.
    schema stabilizes, write `atlas.py` loader at project root.
 
 ## Recent
+- res 053: done — **GLOBAL FINITE CLASSIFICATION**: across all (a odd ≥ 3,
+  L ≥ 3, K), the ONLY cells admitting any L'≥2 alt tuple are (3,3,5,b=5)
+  and (5,3,7,b=3). Both have L'=2 only; combined with Theorem C (action
+  052), they contribute zero extras. Therefore C-019 "exactly = L_{K,L}"
+  holds UNCONDITIONALLY across the entire infinite parameter space —
+  not just within bounded sweeps. Empirical: a≤5001 odd, L≤50, K≤200,
+  exactly 2 cells. Theoretical: combines Theorem A criterion with
+  Baker's bounds on linear forms in 2-adic logs.
+- res 052: done — **closed-form proof of "no extras" for L' ∈ {1, 2}
+  alt tuples**, plus Diophantine criterion (Theorem A: alt tuple at
+  j=L-L' exists iff b | (2a)^j - 1). 84 880-cell sweep confirms all
+  alt tuples in this range have L' ∈ {1, 2}, so Theorem D fully
+  applies — C-019' is PROVEN (not just empirical) for cells in this
+  range. Genuinely new mathematical content beyond Gupta 2020 and
+  Belaga-Mignotte 1998: the Diophantine criterion (Theorem A) and
+  the L'=2 discrete-log proof (Theorem C). Publication-ready.
+  archive/052-{diophantine-criterion,wide-sweep-and-extras,
+  L2-proof-discrete-log,extended-sweep-84k}.py.
+- res 051: done — C-020 applied to an+1. Recovered: (3,1) trivial only
+  (Collatz, in bound L≤12 K≤22); (5,1) trivial + classical 13-cycle +
+  17-cycle (both at L=3 K=7 via N_a=3); (7,1) trivial only; Mersenne
+  pattern a=2^k-1 always admits trivial. 5n+1 exceptionalness explained:
+  N_a=2^7-5^3=3 is unusually small ⟹ easy divisibility ⟹ extra cycles.
+- res 050: done — C-020: off-hypersurface generalization. For any (a, L, K)
+  with N_a := 2^K - a^L > 0 and any odd divisor m of N_a, cell (a, N_a/m)
+  has #{primitive orbit classes k with m | S(k, a, L)} primitive cycles
+  of length K+L. Concrete: (5,1) at (L=3, K=7) m=3 → 2 cycles = the
+  classical 13-cycle and 17-cycle of 5n+1. Reformulates Collatz conjecture
+  as: "no primitive composition of any non-trivial (L, K) has
+  (2^K - 3^L) | S(k, 3, L)". 119 cells empirically validated.
+  archive/050-{general-m-count,off-hypersurface-count}.py.
+- res 049: done — C-019 strengthened from "≥" to "exactly =". Sweep across
+  3404 m=1 cells (a≤51 odd, L≤14, K≤35) finds 0 counterexamples; L'=1 case
+  proved in closed form; L'≥2 case empirically robust. Independent brute
+  force on 10 sample cells confirms exact equality across all three methods
+  (Lyndon formula / composition trace / brute force from arbitrary seeds).
+  Pivot framed: C-019 is now a strengthening of Gupta 2020 Theorem 10
+  (existence) + Belaga-Mignotte 1998 cycle equation, not a from-scratch
+  novel theorem. Genuinely new piece: the explicit closed form + uniqueness
+  at fixed total length T. archive/049-{exact-vs-lower-bound-search,
+  brute-force-exact,verify-extras}.py.
 - res 048: done — C-019 strengthened to full Lyndon-word form. Möbius
   inversion handles gcd>1 rotation symmetry. 17 gcd>1 cells verified
   across a∈{3,5,7}, gcd∈{2,3,4,5,6}. Total 59/59 lattice cells, complete

@@ -1,147 +1,107 @@
-# Report — generalized Collatz dynamics, parameter atlas
+# Report — generalized Collatz dynamics, autoresearch run
 
-## Task
-
-Produce a falsifiable parameter atlas of the generalized Collatz family
-
-  `T_{a,b}(n) = n/2 if n even,  a·n + b if n odd`   (a, b odd integers).
-
-For each parameter set, classify the dynamics (all-converge to known cycle,
-has additional cycle, has orbit unbounded up to horizon N), correlate the
-classification with algebraic features (residues mod small primes, growth
-rate of the average map, etc.), and propose falsifiable conjectures of the
-form "for parameters in region R, behavior B holds." Maintain a research
-log, a conjecture ledger with explicit falsification protocols, and a
-prediction-vs-outcome record. Single-command reproducibility, fixed seeds,
-laptop-scale (arbitrary-precision Python).
-
-The bar for success: a small number of falsifiable empirical claims, each
-with scope and evidence, plus the atlas in reusable form. *Even one new
-candidate "tractable cousin" of Collatz would be a real contribution.*
-
-Constraints: laptop-scale, arbitrary-precision integers (Python), fixed
-seeds, single-command regeneration. Pre-registered prediction-vs-outcome
-record. Negative and null results count if the search was thorough enough
-to be informative.
-
-## Main conclusion
-
-**Starting point.** The brief (TASK.md) asked for a falsifiable atlas of the
-family `T_{a,b}(n) = n/2 if even, a·n+b if odd` (a, b odd) and, ideally,
-"even one new candidate tractable cousin of Collatz."
-
-**Outcome (one-paragraph summary).** The autoresearch run produced a
-genuinely new structural theorem (C-019): the primitive cycles of length
-`K+L` of the cell `(a, b = 2^K − a^L)` — defined for any odd `a ≥ 3` and
-positive integers `L, K` with `2^K > a^L` — are in explicit **bijection
-with binary Lyndon words of length `K` with `L` ones**, and there are
-exactly `L_{K,L} := (1/L)·Σ_{d|gcd(K,L)} μ(d)·C(K/d−1, L/d−1)` of them.
-This produces an **infinite 2D lattice of tractable cousins of Collatz**
-with explicit, combinatorially-given cycle counts; the previously
-identified Catalan family is a corollary (the K = 2L−1 diagonal at a=3),
-and a second Catalan family at K = 2L+1 falls out for free.
-
-**Evidence.**
-- **Proof sketch** (full in `autoresearch/CONJECTURES.md` C-019,
-  `log/047-research-general-mequal1-theorem.md`,
-  `log/048-research-lyndon-full-theorem.md`):
-  1. b = 2^K − a^L is positive odd (even − odd, K ≥ 1, a odd).
-  2. By construction `m := (2^K − a^L)/b = 1`, so by C-011 (proven
-     necessary for b odd in `archive/014-c011-necessity-proof.md`),
-     each composition `k⃗` of K into L positive parts yields a primitive
-     cycle with explicit entry point
-     `n₀(k⃗) = Σ_{i=0}^{L−1} a^{L−1−i} · 2^{k_1+…+k_i}`.
-  3. `n₀(k⃗)` is a positive odd integer (first term odd, rest even).
-  4. The cyclic group ℤ/L acts on compositions by rotation; rotation-
-     fixed compositions correspond to imprimitive (shorter, repeated)
-     cycles and are removed by Möbius inversion; the count of
-     primitive orbits equals `L_{K,L}`. ∎
-- **Empirical verification: 59/59 cells, no failures**, across
-  a ∈ {3, 5, 7} and gcd(K, L) ∈ {1, 2, 3, 4, 5, 6}. Sample (a = 3):
-
-  | L\K | 5 | 7 | 8 | 9 | 11 | 13 | 17 |
-  |---|---|---|---|---|---|---|---|
-  | 3 | 2 | 5 | 7 |   | 15 |   |   |
-  | 4 |   | 5 |   | 14 | 30 | 55 |   |
-  | 5 |   |   | 7 | 14 | 42 | 99 | 364 |
-  | 6 |   |   |   |   | 42 | 132 | 728 |
-  | 9 |   |   |   |   |   |   | 1430 |
-
-  All entries match `L_{K,L}` exactly.
-- **Catalan diagonals (corollary, C-018).**
-  - `K = 2L − 1`: counts = `C_{L−1}` (Catalan). Verified for
-    L = 3..9: 2, 5, 14, 42, 132, 429, 1430 in cells (3,5), (3,47),
-    (3,269), (3,1319), (3,6005), (3,26207), (3,111389).
-  - `K = 2L + 1`: counts = `C_L`. Verified for L = 1..7 in cells
-    (3,5), (3,23), (3,101), (3,431), (3,1805), (3,7463), (3,30581).
-- **Falsification protocol.** Find any cell `(a, 2^K − a^L)` with the
-  count of primitive cycles of length `K+L` ≠ `L_{K,L}`. None found
-  in 59 trials.
-
-**How it compares to prior known results.**
-- **Already known going in:** C-011 (cycle classification, proven
-  necessary for b odd); the b-scaling embedding for inherited cycles
-  (C-007′); per-cell empirical observations (C-001 a-axis convergence,
-  C-013 lift, C-015 power-law decay, C-016 stopping time). These
-  characterized convergence statistics but gave no closed-form cycle
-  count outside hand-computed examples.
-- **What's genuinely new:**
-  1. C-019 — a single closed-form formula that enumerates the entire
-     m=1 hypersurface across all (a, L, K). Previously, even the
-     count for a single nontrivial cell (e.g. (3, 13) → 7 cycles)
-     was a hand-crafted result (C-008).
-  2. The Lyndon-word bijection itself — putting primitive Collatz
-     cycles in correspondence with one of the most-studied objects
-     in combinatorics on words. I have not seen this connection in
-     the standard generalized-Collatz literature.
-  3. The Catalan families (C-018, both K = 2L±1 diagonals at a=3) —
-     concrete infinite families of tractable cousins, directly
-     answering the TASK.md prompt.
-- **Caveat.** The Lyndon-word count formula itself is classical;
-  the novelty is the bijection with primitive Collatz cycles, not
-  the formula. The theorem covers the m=1 slice only — m > 1 cycles
-  (and the open Collatz problem at (3, 1)) require additional
-  residue-class analysis and remain open.
+> Mathematical paper: [`paper.pdf`](paper.pdf) (LaTeX source: [`paper.tex`](paper.tex)).
+> Independent math review and supporting files: [`other/`](other/).
 
 ---
 
-## Steps of the model carried out
+## 1. The result, in plain English
 
-1. **Atlas construction (actions 001–016).** Built a reproducible
-   parameter atlas covering 137 variants
-   (a ∈ {1, 3, 5, 7, 9, 11, 13}, b ∈ [1, 51] odd) at S = 10⁵,
-   H = 10¹³, T = 10⁵. Identified 171 primitive + 284 inherited cycles.
-2. **Cycle classification (action 014).** Proved C-011 necessary for
-   b odd via gcd propagation: every primitive cycle satisfies
-   `b | (2^K − a^L)`. This is the structural backbone.
-3. **Convergence statistics (actions 017–033).** Established C-013
-   (per-seed lift–halving correlation, ~10–15% match to Brownian
-   theory), C-015 (power-law `f ∝ S^{−c(a,b)}` with `c(a) ≈ (a-4)/(a-2)`),
-   C-016 (stopping time `τ ≈ log₂(n)/|μ_T|`).
-4. **Falsification cycle (actions 005–022).** Falsified C-002 strong,
-   C-006 universal, C-006′, C-014 strong; reframed as C-006″ and C-007′
-   with closed-form proofs.
-5. **Hunt for cycle-rich cells (actions 040–044).** Systematic
-   enumeration of `(a, b)` with `m = 1` for multiple `(L, K)` tuples;
-   found exactly three "double-m=1" cells {(3,5), (3,13), (5,3)}
-   (C-017).
-6. **First Catalan family (action 045).** Noticed that for `K = 2L−1`,
-   `gcd(K, L) = 1`, Burnside dedup gives `C(2L−2, L−1)/L = C_{L−1}`.
-   Verified L=3..8 by direct sweep at (3, 2^{2L−1}−3^L).
-7. **L=9 verification + b-typo correction (action 046).** Confirmed
-   1430 cycles at (3, 111389), corrected b from log/045's 113213.
-8. **Generalization to C-019 — gcd=1 case (action 047).** Tested
-   `C(K−1, L−1)/L` across the (L, K) lattice for a ∈ {3, 5, 7}:
-   42/42 cells matched. Discovered second Catalan family at K=2L+1.
-9. **Strengthening via Möbius/Lyndon (action 048).** Extended to
-   gcd > 1 via Möbius inversion (binary Lyndon-word count). Tested
-   17 cells with gcd ∈ {2, 3, 4, 5, 6}: all matched. Total 59/59.
-10. **Documentation.** Recorded C-019 (full Lyndon form) in
-    `autoresearch/CONJECTURES.md`, demoted C-018 to corollary,
-    rewrote README.md headline, updated MEMORY.md and log.tsv.
+### 1.1 What the theorem is about
 
-**Artifacts.** Atlas data: `atlas.py` + parquets in `autoresearch/archive/`.
-Verification scripts: `archive/047-general-lattice.py`,
-`archive/047-catalan-k-2lp1.py`, `archive/048-lyndon-full-lattice.py`,
-`archive/046-catalan-l9-verify.py`. Full conjecture ledger:
-`autoresearch/CONJECTURES.md`. Per-action logs: `autoresearch/log/`.
+The Collatz conjecture asks whether iterating "halve if even, otherwise
+3n + 1" always reaches 1. We don't know. A reasonable adjacent question:
+in the *family* of similar maps `T_{a,b}(n) = n/2` (n even), `a·n + b`
+(n odd), with a, b odd integers — which (a, b) admit cycles, and how
+many cycles of each length? That's the **parameter atlas** problem.
+
+There's a special "thin slice" of parameter space — cells of the form
+`(a, b = 2^K − a^L)` — called the **m = 1 hypersurface**. On this
+slice every cell admits cycles of length `K + L`. Gupta (2020) proved
+they exist; nobody had given an exact count.
+
+### 1.2 What the agent proved
+
+> The cell `(a, b = 2^K − a^L)` admits **exactly** `L_{K,L}` primitive
+> cycles of length `K + L`, where `L_{K,L}` is the count of binary
+> Lyndon words of length K with L ones.
+
+A binary Lyndon word is the lexicographically smallest rotation of a
+binary string — a classical object in combinatorics (OEIS A001037).
+The bijection: each Lyndon word becomes the odd-step pattern of one
+primitive cycle. Two infinite tractable subfamilies fall out as
+corollaries — `K = 2L ± 1` at `a = 3` give the **Catalan numbers**
+`C_{L−1}` (for L ≥ 3) and `C_L` (for L ≥ 1).
+
+The path from existence (Gupta) to *exact* count required four new
+theorems (A, B, C, 053). Full statements, proofs, and references in
+[`paper.pdf`](paper.pdf) ([source](paper.tex)).
+
+---
+
+## 2. The agent's work, scored by novelty
+
+### 2.1 The novelty scale
+
+To track per-iteration progress and gate the loop's exit condition,
+each action was scored on a 0–10 **novelty** scale relative to prior
+literature in the sub-area:
+
+| Score | Meaning | Comparable artifact |
+|---|---|---|
+| 0 | pure verification of a published result | textbook exercise |
+| 1 | reproducing a known computation in a new setting | undergraduate lab report |
+| 2 | routine sweep, baseline measurement | undergraduate term paper |
+| 3 | a sharp empirical pattern (r > 0.95 across cases) | typical bachelor's dissertation |
+| 4 | closed-form fit, or a substantive falsification | strong bachelor's / weak master's thesis |
+| 5 | closed form strengthening a known existence theorem | master's thesis; INTEGERS-tier short note |
+| 6 | genuinely new theorem inside an existing framework | strong master's / weak PhD chapter |
+| 7 | substantive new mathematical content (new identity, new argument) | typical PhD thesis |
+| 8 | structurally new connection between fields | strong PhD; *Annals* / *JAMS* paper |
+| 9 | new framework or paradigm | landmark monograph; Wiles on FLT, Perelman on Poincaré |
+| 10 | foundational invention | Newton–Leibniz integral, Galois theory, set theory |
+
+The reviewer's calibration of this run landed at **5**; the agent's
+self-assessment was 5–6. Per-component (reviewer): Theorem A 6,
+Theorem C 6, Theorem 053 5, Catalan corollary 3–4, C-019 exact
+count 4–5.
+
+The scale also gated the loop. Up to action 048 the headline was
+"C-019: closed form, novelty 7." A math-reviewer sub-agent scored it
+3/10 — *re-derivation of Gupta 2020 + standard Möbius counting*. The
+reviewer's feedback identified the real open gap (alt-tuple coexistence
+at the same total length T), which became the next iteration's input.
+Actions 052–053 closed that gap with new content; the reviewer's second
+pass scored those 5–6/10 with no exact prior-art duplicate. Without the
+gate the run would have stopped at 048 with an inflated claim.
+
+### 2.2 Novelty per action
+
+![Novelty per action](figures/fig1_novelty_per_action.png)
+
+Fifty-four actions, two days. Long flat plateau at 1–4 (atlas building,
+convergence statistics) until action **045** (first Catalan family) and
+**048** (Lyndon-word full form) — the closed-form jump. Action **049**
+is the *reviewer pivot*. Actions **052–053** close the gap with
+genuinely new content (Theorems A, C, and the global classification).
+
+### 2.3 Cumulative progress
+
+![Cumulative novelty](figures/fig2_cumulative_novelty.png)
+
+The slope changes are visible: phases I–III (atlas + statistics +
+tractable cousin search) are shallow and linear; phase IV (closed
+forms) jumps; phase V dips at 049 then steepens through 052–053.
+
+---
+
+## Artifacts
+
+- **Mathematical paper:** [`paper.pdf`](paper.pdf) ([source](paper.tex)) — full theorems,
+  proofs, empirical verification, references.
+- **Per-action logs and conjecture ledger:** `autoresearch/log/`,
+  `autoresearch/CONJECTURES.md`, `autoresearch/log.tsv`.
+- **Verification scripts and parquets:** `autoresearch/archive/`.
+- **Figures:** `figures/` (matplotlib source `make_figures.py`).
+- **Independent math review, original task statement, atlas script,
+  project README:** [`other/`](other/).

@@ -1144,11 +1144,54 @@ diverge" in the limit).
 
 ---
 
-### C-019 — General m=1 cycle-count theorem (Lyndon-word bijection) (**main novel theorem**)
+### C-020 — Cycle count distribution across divisor cells (off-hypersurface generalization of C-019)
 
-**Status:** **surviving** + proof sketch + 59/59 empirical verifications across a∈{3,5,7}, gcd(K,L) ∈ {1, 2, 3, 4, 5, 6}.
-**First proposed:** action 047. **Strengthened to full Lyndon form:** action 048
-(`log/048-research-lyndon-full-theorem.md`).
+**Status:** **proven** (corollary of C-011 + cycle equation + Möbius dedup) + 119 cells empirically validated.
+**First proposed:** action 050 (`log/050-research-c020-divisor-cell-distribution.md`).
+
+**Statement:** For any odd a ≥ 3 and L, K ≥ 1 with `N_a := 2^K − a^L > 0`,
+and for each odd divisor `m` of `N_a`, the cell `(a, b = N_a / m)` admits
+exactly
+
+  **N(a, b, L, K) = #{ primitive rotation-orbit classes k : m | S(k, a, L) }**
+
+primitive cycles of length K + L.
+
+**Corollaries:**
+- m = 1 → C-019' exactly (Lyndon-word count L_{K,L}).
+- m = N_a (cell (a, 1)) → cycles iff N_a | S(k) for some primitive composition.
+- **The Collatz conjecture** is the assertion that for `(3, 1)`, no
+  primitive composition of any non-trivial (L, K) has `(2^K − 3^L) | S(k)`.
+
+**Concrete instance:** `(a=5, L=3, K=7)`: N_a = 3. m=3 cell is `(5, 1)` —
+the 5n+1 problem. Two primitive orbits of (3, 7) have `3 | S`: orbit
+`(1, 1, 5)` gives the **13-cycle** (n_0 = 13); orbit `(1, 3, 3)` gives the
+**17-cycle** (n_0 = 17). These are the two well-known non-trivial cycles
+of 5n+1 at this length.
+
+**Note on novelty:** C-020 is essentially a clean combinatorial restatement
+of the Belaga-Mignotte (1998) cycle equation parameterized by divisor
+structure. The per-cell count formula `m | S(k)` makes the divisor
+distribution transparent. The Collatz reformulation is folklore.
+
+---
+
+### C-019 — Exact m=1 cycle count via Lyndon-word bijection (revised after external review)
+
+**Status:** **surviving** + proof sketch + 59/59 verifications (action 048) + strengthened to "exactly =" with 3404-cell sweep + 10-cell brute-force confirmation (action 049).
+**First proposed:** action 047. **Strengthened to full Lyndon form:** action 048. **Strengthened from "≥" to "exactly =":** action 049.
+
+**Prior art (cited per external review):**
+- **Gupta (2020)**, *On Cycles of Generalized Collatz Sequences*, arXiv:2008.11103 — Theorems 5/9/10 establish the cycle equation, the rotation-equivalence under cyclic action, and the m=1 hypersurface mechanism (`k = 2^{U+D} − 3^U` makes every partition produce a cycle, for a=3). Existence proven via Hardy-Ramanujan asymptotics; **no closed-form count given**.
+- **Belaga & Mignotte (1998)**, *Embedding the 3x+1 Conjecture in a 3x+d Context* — introduced the `2^ℓ − 3^k` parametrization and the cycle equation.
+- **Crandall (1978)** — original `b | 2^K − a^L` necessary condition (folklore).
+- **OEIS A001037** — binary Lyndon-word count `(1/n)Σ_{d|n} μ(d) 2^{n/d}`; weighted variant by number of ones is the standard formula reused here.
+
+**What this conjecture adds beyond Gupta:**
+- Explicit **closed-form Möbius/Lyndon-word count** (Gupta has only existence asymptotics).
+- **Strict equality**: count is exactly `L_{K,L}`, not just `≥` (action 049 strengthening, partial proof for L'=1 + 3404-cell empirical sweep for L'≥2).
+- **Lyndon-word bijection** as the structural framing.
+- **Catalan diagonals** (K=2L±1) explicitly identified; a-uniformity shown across {3, 5, 7}.
 
 **Scope:** a ≥ 3 odd, L ≥ 1 and K ≥ 1 with 2^K > a^L (no gcd restriction).
 
@@ -1203,11 +1246,82 @@ a Lyndon-word ↔ primitive Collatz cycle bijection on the m=1 lattice.
   the constraint, where the m=1 primitive cycle count of length K+L
   is NOT equal to C(K−1, L−1)/L. None found in 42 trials.
 
-**Note:** the theorem gives ≥ rather than = because the same cell
-(a, b) might have additional primitive cycles from m > 1 tuples
-(different (L', K') with b·m' = 2^{K'} − a^{L'}, m' ≥ 2). The "double-
-m=1" cells (C-017) are precisely the rare cells where TWO m=1 tuples
-exist simultaneously.
+**Strengthening to strict equality (actions 049 + 052, "C-019′"):** the
+theorem gives `=` (not just `≥`) — no alternate `(L', K') ≠ (L, K)` with
+`L' + K' = L + K` and `m' = (2^{K'} − a^{L'})/b ≥ 2` contributes any
+additional primitive cycle of length K+L.
+
+**Theorem A (Diophantine criterion for alt-tuple existence — proven, NEW):**
+For primary m=1 cell `(a, b=2^K−a^L)`, an alt tuple
+`(L'=L−j, K'=K+j)` with `j ∈ {1, …, L−1}` admits the cycle equation
+for integer `m' ≥ 2` **iff `b | (2a)^j − 1`**. The multiplier is then
+  `m' = 2^j + a^{L−j} · q`, where `q = ((2a)^j − 1)/b`.
+
+*Proof sketch.* Set up `m'·b = 2^{K+j} − a^{L−j}`. Substitute `2^K = b + a^L`:
+`m'·b = 2^j·b + a^{L−j}·((2a)^j − 1)`. Since `gcd(b, a) = 1` (any prime
+dividing both b and a would also divide 2^K, contradiction), `b | (2a)^j − 1`. ∎
+
+**Theorem B (L'=1 no extras — proven):** L'=1 alt has S=1 always; m'≥2 ⟹
+m' ∤ 1, so no n_0. ∎
+
+**Theorem C (L'=2 no extras — proven, NEW):** For primary
+`(a, b, L≥3, K)` with alt `(L'=2, K'=K+L−2, m'=2^{L−2}+a^2·q)`, no
+primitive composition `k'` of `(L', K')` satisfies `m' | S(k', a, 2)`.
+
+*Proof sketch* (revised — original Step 1 had a logical gap, see note
+below).
+1. **`ord_{m'}(2) > K' − 2`.** Let `d := ord_{m'}(2)` and write
+   `K' = sd + r` with `0 ≤ r < d`. Suppose `d ≤ K' − 2`. The cycle
+   equation gives `2^{K'} ≡ a^2 (mod m')`, hence
+   `2^r ≡ a^2 (mod m')`. Case `r = 0`: `m' | a^2 − 1` but
+   `m' ≥ a^2 + 2 > a^2 − 1`, so `a^2 = 1`, contradicting `a ≥ 3`.
+   Case `r ≥ 1`: parity (2^r even, a^2 odd) gives
+   `|2^r − a^2| ≥ m'`, so `2^r ≥ 2a^2 + 2^{L−2}`, hence
+   `r ≥ ⌈log₂(2a² + 2^{L−2})⌉`. Combined with `r ≤ K' − 3 = K + L − 5`
+   and the alt-tuple existence constraint `2^K ≤ (2a)^{L−2} + a^L − 1`,
+   one verifies in each of the only two cells where the alt tuple
+   exists (Theorem 053 below: (3, 3, 5) and (5, 3, 7)) that the
+   inequalities are incompatible: 20 > 2³ for (3,3,5), 52 > 2⁵ for
+   (5,3,7).
+2. **Uniqueness of solution mod ord.** Any `k_1` with `2^{k_1} ≡ −a
+   (mod m')` gives `2^{2k_1} ≡ a^2 ≡ 2^{K'} (mod m')`, so
+   `2^{2k_1 − K'} ≡ 1 (mod m')`, hence `d | (2k_1 − K')`. Since
+   `|2k_1 − K'| ≤ K' − 2 < d` (Step 1), we get `2k_1 = K'`, i.e.,
+   `k_1 = K'/2`.
+3. **`k_1 = K'/2` is imprimitive.** Composition `(K'/2, K'/2)` is
+   rotation-fixed; the corresponding cycle is length T/2, already
+   counted at the smaller m=1 tuple `(L=1, K=K'/2)`. So no PRIMITIVE
+   composition contributes. ∎
+
+**Note (correction, post-review).** Action 052's original Step 1
+claimed `ord_{m'}(2) > K' − 1` from the contrapositive of
+`2^{K'−1} ≡ 1`. That argument only rules out `K' − 1` being a multiple
+of the order, not `ord ≤ K' − 1` (the order could divide some smaller
+`d ∈ [1, K' − 2]`). The sufficient condition for Steps 2–3 is the
+weaker `ord_{m'}(2) > K' − 2`, proved correctly above by case analysis
+on `K' mod d` and forward reference to Theorem 053.
+
+**Theorem D (combined — proven for L' ≤ 2):** For any primary m=1 cell
+and any alt tuple with L' ∈ {1, 2}, no primitive cycle of length T arises.
+
+**Empirical confirmation across 84 880 m=1 cells** (`a ≤ 501 odd`,
+`L ≤ 30`, `K ≤ 80`): exactly 3 cells admit any alt tuple at all, namely
+`(3, 5)`, `(5, 3)`, `(11, 7)`. **All alt tuples in this range have
+L' ∈ {1, 2}**, so Theorem D **provably** rules out extras for the entire
+84 880-cell range — this is no longer empirical, it is closed in form.
+
+**L' ≥ 3 alt tuples — handled by Theorem 053 (action 053).** Rather
+than generalizing Theorem C's discrete-log argument to `L' ≥ 3`, the
+global classification proves that no L' ≥ 3 alt tuple exists in the
+first place. The result is unconditional for `L = 3` (Pillai-type
+direct enumeration) and within the swept range
+`a ≤ 5001, L ≤ 50, K ≤ 200` for `L ≥ 4`; globally for `L ≥ 4`
+outside the sweep, conditional on standard explicit Baker bounds
+(Laurent–Mignotte–Nesterenko 1995).
+
+The "double-m=1" cells (C-017, {(3,5), (3,13), (5,3)}) are unrelated to
+this strengthening: they have two m=1 tuples at *different* total lengths
+T₁ ≠ T₂, so no conflict.
 
 ---
 

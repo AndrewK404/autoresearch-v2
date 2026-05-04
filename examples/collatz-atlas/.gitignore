@@ -1,0 +1,7 @@
+# Large raw-sweep parquets are regenerable from the corresponding *-sweep.py
+# scripts in autoresearch/archive/. Excluded from the repository.
+autoresearch/archive/*-results.parquet
+__pycache__/
+*.aux
+*.log
+*.out
