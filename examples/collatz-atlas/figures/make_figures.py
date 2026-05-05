@@ -11,7 +11,9 @@ from math import comb, gcd
 import matplotlib.pyplot as plt
 import numpy as np
 
-OUT = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.abspath(os.path.join(HERE, "..", "..", "assets"))
+os.makedirs(OUT, exist_ok=True)
 
 # Global style — clean, modern, publication-friendly
 plt.rcParams.update({
@@ -73,7 +75,7 @@ def L_count(K, L):
     return s // L
 
 
-# ---------- Figure 1: novelty per action ----------
+# ---------- Figure 1: novelty per iteration ----------
 def fig_novelty():
     actions = list(range(0, 54))
     novelty = {
@@ -91,21 +93,21 @@ def fig_novelty():
            edgecolor="white", linewidth=0.6)
     # offsets: (x_text, y_text) relative to bar
     headlines = [
-        (45, "Catalan\nfamily", -7, 1.4),
-        (47, "C-019\n(gcd=1)", -4, 2.2),
-        (48, "Lyndon-word\nfull form", 0, 0.6),
-        (49, "reviewer\npivot", -2, 3.4),
-        (52, "Theorems\nA + C", 5, 0.6),
-        (53, "global classification\n(Theorem 053)", 5, 2.4),
+        (45, "Catalan\nsubfamily", -7, 1.4),
+        (47, "C-019\ngcd=1 case", -4, 2.2),
+        (48, "Lyndon-word\ncount", 0, 0.6),
+        (49, "reviewer gate:\nalt-tuples", -2, 3.4),
+        (52, "Theorems A+C:\nno extras", 5, 0.6),
+        (53, "global\nclassification", 5, 2.4),
     ]
     for k, lbl, dx, dy in headlines:
         ax.annotate(lbl, xy=(k, novelty[k]),
                     xytext=(k + dx, novelty[k] + dy),
                     ha="center", fontsize=8.5, color="#222",
                     arrowprops=dict(arrowstyle="-", lw=0.5, color="#888"))
-    ax.set_xlabel("Action #")
+    ax.set_xlabel("Iteration #")
     ax.set_ylabel("Novelty score (0–10)")
-    ax.set_title("Per-action novelty — plateau, inflections, reviewer pivot at 049, recovery at 052–053")
+    ax.set_title("Collatz-atlas example: novelty by iteration, with reviewer gate at 049")
     ax.set_ylim(0, 10.5)
     ax.set_xlim(-1, 60)
     ax.grid(axis="y", alpha=0.5)
