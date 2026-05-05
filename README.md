@@ -1,52 +1,17 @@
 # autoresearch
 
 **An agentic skill for autonomous optimization.**
-This project was primarily inspired by Karpathy's original repository: I
-iteratively found gaps in that approach and fixed them. At the same time, I
-tried to keep the system as simple as possible.
 
-Point the agent at a target file (or scope) and one scalar metric with a
-direction (min/max). The main agent thread becomes an event-driven coordinator
-that iterates: hypothesize → edit → eval → keep/discard → learn → repeat,
-until you stop it.
+Inspired by Karpathy's original autoresearch, this version keeps the loop
+simple while widening the jobs it can handle. Point it at a target file or
+scope, define one scalar metric and direction, and let the agent iterate:
+hypothesize → edit → eval → keep/discard → learn → repeat.
 
-Works for ML training (`val_loss`, `val_bpb`), API performance (`p50_ms`),
-bundle size, prompt pass-rate, LLM-judged quality — for **any** metric that
-reduces to one shell command printing one parseable scalar.
-
-I also added a **research-only mode** for tasks without an executable
-experiment: literature surveys, framework comparisons, design investigations.
-The first interview question chooses the mode; the agent may skip questions
-when the answers were already provided in the initial prompt. In research-only
-mode the experiment steps are removed entirely, and thoughts and conclusions
-are saved in the action logs.
-
-## Install & run
-
-I. Start Claude Code with auto mode enabled:
-
-```bash
-# Claude Code
-claude --enable-auto-mode
-
-# Codex
-# Codex does not need a separate auto mode: open a normal session and install
-# the skill with the command below.
-```
-
-II. Install the skill by writing:
-
-```
-install skill from AndrewK404/autoresearch-v2
-```
-
-III. Start the task:
-
-```
-run autoresearch-v2 {task description + context, if needed}
-```
-
-## Architecture
+It works for ML training (`val_loss`, `val_bpb`), API performance (`p50_ms`),
+bundle size, prompt pass-rate, LLM-judged quality, or any task where one shell
+command prints one parseable scalar. For tasks without an executable
+experiment, **research-only mode** removes the eval loop and saves thoughts and
+conclusions in the action logs.
 
 After setup, the main agent thread works as an event-driven coordinator. It
 launches sub-agents in the background and integrates returns as they arrive:
@@ -65,6 +30,28 @@ run in the background).
 coordinator reads the contract, updates the live memory/log files, dispatches
 one experiment plus background sub-agents, and integrates async returns into
 the next iteration.*
+
+## Install & run
+
+1. Start Claude Code with auto mode enabled:
+
+```bash
+claude --enable-auto-mode
+```
+
+For Codex, open a normal session; no separate auto mode is needed.
+
+2. Install the skill by writing:
+
+```
+install skill from AndrewK404/autoresearch-v2
+```
+
+3. Start the task:
+
+```
+run autoresearch-v2 {task description + context}
+```
 
 ## File layout in the user's project
 
